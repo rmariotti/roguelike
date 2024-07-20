@@ -96,6 +96,8 @@ class EntityManager:
 
             if (has_required_components):
                 entities_with_components.append(entity)
+            else:
+                continue
 
         return entities_with_components
 

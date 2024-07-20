@@ -1,11 +1,10 @@
 from ecs import EntityManager
 from components import PositionComponent, SpeedComponent, DirectionComponent
+from math import sin, cos
 
 
 class MovementSystem:
-    """
-    An object containing entity movement logic.
-    """
+    """An object containing entity movement logic."""
     def __init__(self, entity_manager: EntityManager):
         self.entity_manager = entity_manager
 
@@ -17,13 +16,13 @@ class MovementSystem:
         for entity in moveable_entities:
             # Retrieve relevant components.
             speed_component = entity.get_component(SpeedComponent)
-            # direction_component = entity.get_component(DirectionComponent)
+            direction_component = entity.get_component(DirectionComponent)
             position_component = entity.get_component(PositionComponent)
 
-            # Calculate position delta  based on speed and directgion.
+            # Calculate position delta using speed and direction.
             # TODO: Remove placeholder values.
-            dx = speed_component.speed * 1
-            dy = speed_component.speed * 0
+            dx = round(speed_component.speed * cos(direction_component.direction.radians))
+            dy = round(speed_component.speed * sin(direction_component.direction.radians))
 
             # Update entity position.
             position_component.x += dx

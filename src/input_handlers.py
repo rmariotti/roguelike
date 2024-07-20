@@ -3,6 +3,7 @@ from typing import Optional, override
 import tcod.event
 
 from actions import Action, EscapeAction, MovementAction
+from utils import Direction
 
 
 class EventHandler(tcod.event.EventDispatch[Action]):
@@ -17,13 +18,13 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         key = event.sym
 
         if key == tcod.event.KeySym.UP:
-            action = MovementAction(dx=0, dy=-1)
+            action = MovementAction(direction=Direction.NORTH, speed=1)
         elif key == tcod.event.KeySym.DOWN:
-            action = MovementAction(dx=0, dy=1)
+            action = MovementAction(direction=Direction.SOUTH, speed=1)
         elif key == tcod.event.KeySym.LEFT:
-            action = MovementAction(dx=-1, dy=0)
+            action = MovementAction(direction=Direction.WEST, speed=1)
         elif key == tcod.event.KeySym.RIGHT:
-            action = MovementAction(dx=1, dy=0)
+            action = MovementAction(direction=Direction.EAST, speed=1)
 
         elif key == tcod.event.KeySym.ESCAPE:
             action = EscapeAction()

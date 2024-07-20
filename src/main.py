@@ -3,20 +3,18 @@ from typing import Iterable
 
 import tcod
 
-from actions import EscapeAction, MovementAction
 from input_handlers import EventHandler
 from ecs import Entity, EntityManager
-from components import PositionComponent, SpeedComponent, DirectionComponent, RenderingComponent, MapComponent
-from systems import MovementSystem, RenderingSystem
+from components import PositionComponent, SpeedComponent, DirectionComponent, RenderingComponent, MapComponent, IsPlayerCharacterTag
+from systems import MovementSystem, RenderingSystem, EventSystem
+from utils import Direction
 
 
 def main() -> None:
-    """
-    Application entry point.
-    """
+    """Application entry point."""
     # TODO: Load screen size from configuration file.
-    screen_width, screen_height = (80, 50)
-    map_width, map_height = (80, 45)
+    screen_width, screen_height = map_width, map_height = (80, 50)
+
 
     tileset = tcod.tileset.load_tilesheet(
             # TODO: Hardcoded sting here.
@@ -28,7 +26,8 @@ def main() -> None:
     # Initialize player character, motionless at the center ofthe screen. 
     player_character_entity = Entity(
             PositionComponent(int(screen_width / 2), int(screen_height / 2)),
-            SpeedComponent(0), DirectionComponent(0),
+            IsPlayerCharacterTag(),
+            SpeedComponent(0), DirectionComponent(Direction.NORTH),
             RenderingComponent("@", (255, 255, 0)))
     npc = Entity(
             PositionComponent(int(screen_width / 3), int(screen_height / 3)),
@@ -41,6 +40,9 @@ def main() -> None:
     entity_manager = EntityManager([player_character_entity, npc, game_map])
     # Initialize systems.
     systems = []
+
+    event_system = EventSystem(entity_manager, event_handler)
+    systems.append(event_system)
 
     movement_system = MovementSystem(entity_manager)
     systems.append(movement_system)
@@ -59,27 +61,11 @@ def main() -> None:
         systems.append(rendering_system)
 
         while True:
-            for event in tcod.event.wait():
-                # TODO: Move event handling from here, maybe in a system?
-                action = event_handler.dispatch(event)
-
-                if action is None:
-                    update_systems(systems) 
-
-                if isinstance(action, MovementAction):
-                    player_character_entity.get_component(SpeedComponent).speed = 1
-                    update_systems(systems)
-                    player_character_entity.get_component(SpeedComponent).speed = 0 
- 
-                elif isinstance(action, EscapeAction):
-                    raise SystemExit()
-
+            update_systems(systems) 
 
 # TODO: Remove this function and build proper ECS world support.
 def update_systems(systems: Iterable):
-    """
-    Helper function to update all systems in ECS world.
-    """
+    """Helper function to update all systems in ECS world."""
     for system in systems:
         system.update()
 

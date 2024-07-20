@@ -26,14 +26,12 @@ def new_tile(
         transparent: int,
         dark: Tuple[int, Tuple[int, int, int], Tuple[int, int, int]],
 ) -> np.ndarray:
-    """
-    Helper function for defining individual tile types.
-    """
+    """Helper function for defining individual tile types."""
     return np.array((walkable, transparent, dark), dtype=tile_dt)
 
 
 # TODO: Remove hardcoded colors.
 floor = new_tile(walkable=True, transparent=True,
-                 dark=(ord("."), (255, 255, 255), (50, 50, 150)))
+                 dark=(ord(" "), (255, 255, 255), (50, 50, 150)))
 bound_wall = new_tile(walkable=False, transparent=False,
                       dark=(ord(" "), (255, 255, 255), (0, 0, 100)))

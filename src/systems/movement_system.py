@@ -20,7 +20,6 @@ class MovementSystem:
             position_component = entity.get_component(PositionComponent)
 
             # Calculate position delta using speed and direction.
-            # TODO: Remove placeholder values.
             dx = round(speed_component.speed * cos(direction_component.direction.radians))
             dy = round(speed_component.speed * sin(direction_component.direction.radians))
 
@@ -28,3 +27,5 @@ class MovementSystem:
             position_component.x += dx
             position_component.y += dy
 
+            # Stop the entity after movement.
+            speed_component.speed = 0

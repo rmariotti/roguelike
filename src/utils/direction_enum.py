@@ -35,4 +35,3 @@ class Direction(Enum):
     WEST_SOUTH_WEST = 13, float(9/8*pi)
     WEST_NORTH_WEST = 14, float(11/8*pi)
     NORTH_NORTH_WEST = 15, float(13/8*pi)
-

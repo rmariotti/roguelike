@@ -6,10 +6,9 @@ from tcod.console import Console
 
 
 class RenderingSystem:
-    """
-    System handling rendering of entities with rendering and position components.
-    """
-    def __init__(self, entity_manager: EntityManager, console: Console, context: Context):
+    """System handling rendering of entities."""
+    def __init__(self, entity_manager: EntityManager, console: Console,
+                 context: Context):
         self.entity_manager = entity_manager
         self.console = console
         self.context = context
@@ -41,4 +40,3 @@ class RenderingSystem:
             map_component = entity.get_component(MapComponent)
 
             self.console.rgb[0:map_component.width, 0:map_component.height] = map_component.tiles["dark"]
-

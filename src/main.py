@@ -5,7 +5,9 @@ import tcod
 
 from input_handlers import EventHandler
 from ecs import Entity, EntityManager
-from components import PositionComponent, SpeedComponent, DirectionComponent, RenderingComponent, MapComponent, IsPlayerCharacterTag
+from components import (
+    PositionComponent, SpeedComponent, DirectionComponent,
+    RenderingComponent, MapComponent, IsPlayerCharacterTag)
 from systems import MovementSystem, RenderingSystem, EventSystem
 from utils import Direction
 
@@ -72,4 +74,3 @@ def update_systems(systems: Iterable):
 
 if __name__ == "__main__":
     main()
-

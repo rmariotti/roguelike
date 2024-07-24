@@ -7,4 +7,3 @@ class RenderingComponent(Component):
     def __init__(self, char: str, color: Tuple[int, int, int]):
         self.char = char
         self.color = color
-

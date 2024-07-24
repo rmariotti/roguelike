@@ -1,4 +1,4 @@
-from typing import List, Type, Optional
+from typing import Type, Optional
 from abc import ABC, abstractmethod
 
 
@@ -14,16 +14,12 @@ class Component(ABC):
 
 
 class Entity:
-    """
-    A generic object to represent players, enemies, items, etc.
-    """
+    """A generic object to represent players, enemies, items, etc."""
     def __init__(self, *components: Component):
         self.components = list(components)
 
     def get_component(self, component_type: Type[Component]) -> Optional[Component]:
-        """
-        Returns entity's component of given type.
-        """
+        """Returns entity's component of given type."""
         # TODO: Index components so that accessing them does not
         # require linear search.
         for component in self.components:
@@ -58,17 +54,13 @@ class System(ABC):
 
 
 class EntityManager:
-    """
-    Collection of entities.
-    """
-    def __init__(self, entities: List[Entity] = []):
+    """Collection of entities."""
+    def __init__(self, entities: list[Entity] = []):
         self.entities = entities
 
     def get_entities_with_components(
-            self, *components_types: Type[Component]) -> List[Entity]:
-        """
-        Get entities that contains all the specified components.
-        """
+            self, *components_types: Type[Component]) -> list[Entity]:
+        """Get entities that contains all the specified components."""
         entities_with_components = []
         has_required_components = True
         has_required_component = False
@@ -100,4 +92,3 @@ class EntityManager:
                 continue
 
         return entities_with_components
-

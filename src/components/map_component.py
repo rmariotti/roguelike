@@ -1,7 +1,7 @@
 import numpy as np # type: ignore
 
 from ecs import Component
-import tile_types
+from procgen import tile_types
 
 
 class MapComponent(Component):

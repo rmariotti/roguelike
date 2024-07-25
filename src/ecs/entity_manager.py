@@ -1,56 +1,6 @@
-from typing import Type, Optional
-from abc import ABC, abstractmethod
+from typing import Type
 
-
-class Component(ABC):
-    """
-    Abstaract base class for components.
-
-    A component is a data container for entities and should have no 
-    logic.
-    """
-    def __init__(self):
-        pass
-
-
-class Entity:
-    """A generic object to represent players, enemies, items, etc."""
-    def __init__(self, *components: Component):
-        self.components = list(components)
-
-    def get_component(self, component_type: Type[Component]) -> Optional[Component]:
-        """Returns entity's component of given type."""
-        # TODO: Index components so that accessing them does not
-        # require linear search.
-        for component in self.components:
-            if isinstance(component, component_type):
-                return component
-
-        return None
-        
-
-
-class System(ABC):
-    """
-    Abstract base class for systems.
-
-    A system contains the logic to update components in entities and 
-    have no data.
-    """
-    def __init__(self):
-        pass
-    
-    @abstractmethod
-    def start(self):
-        pass
-
-    @abstractmethod
-    def update(self):
-        pass
-
-    @abstractmethod
-    def stop(self):
-        pass
+from ecs import Entity, Component
 
 
 class EntityManager:

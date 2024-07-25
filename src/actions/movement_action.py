@@ -1,20 +1,9 @@
 from typing_extensions import override
-from abc import ABC
 
+from actions import Action
 from ecs import Entity
-from components import SpeedComponent, DirectionComponent 
+from components import SpeedComponent, DirectionComponent
 from utils import Direction
-
-
-class Action(ABC):
-    def perform(self, entity: Entity) -> None:
-        raise NotImplementedError()
-
-
-class EscapeAction(Action):
-    @override
-    def perform(self, entity: Entity) -> None:
-        raise SystemExit()
 
 
 class MovementAction(Action):

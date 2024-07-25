@@ -3,7 +3,7 @@ from typing import Iterable
 
 import tcod
 
-from input_handlers import EventHandler
+from actions import EventHandler
 from ecs import Entity, EntityManager
 from components import (
     PositionComponent, SpeedComponent, DirectionComponent,

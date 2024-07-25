@@ -3,7 +3,7 @@ from tcod import event
 from ecs import EntityManager
 from components import IsPlayerCharacterTag
 
-from input_handlers import EventHandler
+from actions import EventHandler
 
 
 class EventSystem:

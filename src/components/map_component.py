@@ -10,3 +10,8 @@ class MapComponent(Component):
         self.width, self.height = width, height
         self.tiles = np.full((width, height),
                              fill_value=bound_wall, order="F")
+        # Tiles that the player can currently see. 
+        self.visible = np.full((width, height),
+                               fill_value=False, order="F")
+        # Tiles that the player has seen before.
+        self.explored = np.full((width, height), fill_value=False, order="F")

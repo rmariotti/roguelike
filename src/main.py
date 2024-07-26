@@ -7,8 +7,8 @@ from actions import EventHandler
 from ecs import Entity, EntityManager
 from components import (
     PositionComponent, SpeedComponent, DirectionComponent,
-    RenderingComponent, MapComponent, IsPlayerCharacterTag)
-from systems import MovementSystem, RenderingSystem, EventSystem
+    RenderingComponent, IsPlayerCharacterTag)
+from systems import MovementSystem, RenderingSystem, EventSystem, FovSystem
 from utils import Direction
 from procgen import generate_level
 
@@ -55,6 +55,9 @@ def main() -> None:
 
     movement_system = MovementSystem(entity_manager)
     systems.append(movement_system)
+
+    fov_system = FovSystem(entity_manager)
+    systems.append(fov_system)
 
     with tcod.context.new_terminal(
         screen_width,

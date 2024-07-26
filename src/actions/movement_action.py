@@ -1,9 +1,10 @@
 from typing_extensions import override
 
-from actions import Action
 from ecs import Entity
 from components import SpeedComponent, DirectionComponent
 from utils import Direction
+
+from .action import Action
 
 
 class MovementAction(Action):

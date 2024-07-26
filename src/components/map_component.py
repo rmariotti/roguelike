@@ -1,7 +1,7 @@
 import numpy as np # type: ignore
 
 from ecs import Component
-from procgen import tile_types
+from tiles import bound_wall
 
 
 class MapComponent(Component):
@@ -9,4 +9,4 @@ class MapComponent(Component):
     def __init__(self, width: int, height: int):
         self.width, self.height = width, height
         self.tiles = np.full((width, height),
-                             fill_value=tile_types.floor, order="F")
+                             fill_value=bound_wall, order="F")

@@ -1,6 +1,6 @@
 from typing_extensions import override
 
-from actions import Action
+from .action import Action
 from ecs import Entity
 
 

@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import numpy as np # type: ignore
 
 
@@ -24,7 +22,7 @@ def new_tile(
         *, # Enforce the use of keywords, so params order doesn't matter.
         walkable: int,
         transparent: int,
-        dark: Tuple[int, Tuple[int, int, int], Tuple[int, int, int]],
+        dark: tuple[int, tuple[int, int, int], tuple[int, int, int]],
 ) -> np.ndarray:
     """Helper function for defining individual tile types."""
     return np.array((walkable, transparent, dark), dtype=tile_dt)

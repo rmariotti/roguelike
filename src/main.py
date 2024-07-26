@@ -10,13 +10,14 @@ from components import (
     RenderingComponent, MapComponent, IsPlayerCharacterTag)
 from systems import MovementSystem, RenderingSystem, EventSystem
 from utils import Direction
+from procgen import generate_level
 
 
 def main() -> None:
     """Application entry point."""
     # TODO: Load screen size from configuration file.
     screen_width, screen_height = map_width, map_height = (80, 50)
-
+    room_max_size, room_min_size, max_rooms = (10, 6, 30)
 
     tileset = tcod.tileset.load_tilesheet(
             # TODO: Hardcoded sting here.
@@ -36,7 +37,13 @@ def main() -> None:
             RenderingComponent("X", (255, 255, 255)))
 
     # Initialize game map.
-    game_map = Entity(MapComponent(map_width, map_height))
+    game_map = Entity(generate_level(
+        max_rooms=max_rooms,
+        room_min_size=room_min_size,
+        room_max_size=room_max_size,
+        map_width=map_width,
+        map_height=map_height
+    ))
 
     # Initialize ECS world.
     entity_manager = EntityManager([player_character_entity, npc, game_map])

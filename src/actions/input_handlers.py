@@ -3,7 +3,9 @@ from typing_extensions import override
 
 import tcod.event
 
-from actions import Action, EscapeAction, MovementAction
+from .escape_action import EscapeAction
+from .movement_action import MovementAction
+from .action import Action
 from utils import Direction
 
 

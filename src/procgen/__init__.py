@@ -1,1 +1,1 @@
-from procgen.tile_types import new_tile, floor, bound_wall
+from procgen.generate_level import generate_level

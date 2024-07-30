@@ -1,5 +1,7 @@
 import numpy as np # type: ignore
 
+from colors import Palette
+
 
 # Tile graphics structured type compatible with Console.tiles_rgb.
 graphic_dt = np.dtype(
@@ -20,7 +22,7 @@ tile_dt = np.dtype(
 
 
 def new_tile(
-       *, # Enforce the use of keywords, so params order doesn't matter.
+        *, # Enforce the use of keywords, so params order doesn't matter.
         walkable: int,
         transparent: int,
         dark: tuple[int, tuple[int, int, int], tuple[int, int, int]],
@@ -30,19 +32,21 @@ def new_tile(
     return np.array((walkable, transparent, dark, light), dtype=tile_dt)
 
 
-# TODO: Remove hardcoded colors.
 # SHROUD represents unexplored, unseen tiles.
-SHROUD = np.array((ord(" "), (255, 255, 255), (0, 0, 0)), dtype=graphic_dt)
+SHROUD = np.array(
+        (ord(" "), Palette.WHITE_BRIGHT.value, Palette.BLACK.value),
+        dtype=graphic_dt
+)
 
 floor = new_tile(
         walkable=True,
         transparent=True,
-        dark=(ord(" "), (255, 255, 255), (50, 50, 150)),
-        light=(ord(" "), (255, 255, 255), (200, 180, 50)),
+        dark=(ord("."), Palette.BROWN_BRIGHT.value, Palette.BLACK.value),
+        light=(ord("."), Palette.WHITE.value, Palette.BLACK.value),
 )
 bound_wall = new_tile(
         walkable=False,
         transparent=False,
-        dark=(ord(" "), (255, 255, 255), (0, 0, 100)),
-        light=(ord(" "), (255, 255, 255), (130, 110, 50)),
+        dark=(ord("#"), Palette.CYAN.value, Palette.PURPLE.value),
+        light=(ord("#"), Palette.CYAN_BRIGHT.value, Palette.PURPLE.value),
 )

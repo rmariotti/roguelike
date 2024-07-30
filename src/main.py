@@ -11,17 +11,18 @@ from components import (
 from systems import MovementSystem, RenderingSystem, EventSystem, FovSystem
 from utils import Direction
 from procgen import generate_level
+from colors import Palette
 
 
 def main() -> None:
     """Application entry point."""
     # TODO: Load screen size from configuration file.
     screen_width, screen_height = map_width, map_height = (80, 50)
-    room_max_size, room_min_size, max_rooms = (10, 6, 30)
+    room_max_size, room_min_size, max_rooms = (10, 5, 8)
 
     tileset = tcod.tileset.load_tilesheet(
             # TODO: Hardcoded sting here.
-            "../assets/fonts/dejavu10x10_gs_tc.png",
+            "assets/fonts/dejavu10x10_gs_tc.png",
             32, 8, tcod.tileset.CHARMAP_TCOD)
 
     event_handler = EventHandler()
@@ -31,10 +32,10 @@ def main() -> None:
             PositionComponent(int(screen_width / 2), int(screen_height / 2)),
             IsPlayerCharacterTag(),
             SpeedComponent(0), DirectionComponent(Direction.NORTH),
-            RenderingComponent("@", (255, 255, 0)))
+            RenderingComponent("@", Palette.ORANGE_BRIGHT.value))
     npc = Entity(
             PositionComponent(int(screen_width / 3), int(screen_height / 3)),
-            RenderingComponent("X", (255, 255, 255)))
+            RenderingComponent("A", Palette.RED_BRIGHT.value))
 
     # Initialize game map.
     game_map = Entity(generate_level(

@@ -3,6 +3,7 @@ import random
 
 import tcod
 
+from ecs import EntityManager
 from components import MapComponent
 from tiles import floor
 
@@ -10,15 +11,16 @@ from .layouts.rectangular_room import RectangularRoom
 
 
 def generate_level(
-    max_rooms: int,
-    room_min_size: int,
-    room_max_size: int,
-    map_width: int,
-    map_height: int
+        max_rooms: int,
+        room_min_size: int,
+        room_max_size: int,
+        map_width: int,
+        map_height: int
 ) -> MapComponent:
+    """Builds a game level of interconnected rectangular rooms."""
     level_map = MapComponent(map_width, map_height)
 
-    rooms: List[RectangularRoom] = []
+    rooms: list[RectangularRoom] = []
 
     for r in range(max_rooms):
         room_width = random.randint(room_min_size, room_max_size)
@@ -39,8 +41,8 @@ def generate_level(
         level_map.tiles[new_room.inner] = floor
 
         if len(rooms) != 0: # All rooms after the first.
-            # Dig out a tunnel between this room and the previous one.
-            for x, y in tunnel_between(rooms[-1].center, new_room.center):
+            # Dig out a corridor between this room and the previous one.
+            for x, y in corridor_between(rooms[-1].center, new_room.center, 2):
                 level_map.tiles[x, y] = floor
 
         # Finally append the new room to the list.
@@ -48,22 +50,78 @@ def generate_level(
 
     return level_map
 
-def tunnel_between(
-    start: tuple[int, int], end: tuple[int, int]
+def corridor_between(
+        start: tuple[int, int], end: tuple[int, int], width: int
 ) -> Iterator[tuple[int, int]]:
-    """Return an L-shaped tunnel between these two points."""
+    """Return an L-shaped corridor between two points."""
     x1, y1 = start
     x2, y2 = end
+
+    start_to_corner_enlarge_direction: tuple[int, int] = (0, 0)
+    corner_to_end_enlarge_direction: tuple[int, int] = (0, 0)
 
     if random.random() < 0.5: # 50% chance.
         # Move horizontally, then vertically.
         corner_x, corner_y = x2, y1
+
+        # Calculate in what direction the corridor can grow in width.
+        if x1 > x2:
+            corner_to_end_enlarge_direction = (1, 0)
+        else:
+            corner_to_end_enlarge_direction = (-1, 0)
+        if y1 > y2:
+            start_to_corner_enlarge_direction = (0, 1)
+        else:
+            start_to_corner_enlarge_direction = (0, -1)
     else:
-        # Move vertically then
+        # Move vertically, then horizzontally.
         corner_x, corner_y = x1, y2
 
+        # Calculate in what direction the corridor can grow in width.
+        if x1 > x2:
+            start_to_corner_enlarge_direction = (-1, 0)
+        else:
+            start_to_corner_enlarge_direction = (1, 0)
+        if y1 > y2:
+            corner_to_end_enlarge_direction = (0, -1)
+        else:
+            corner_to_end_enlarge_direction = (0, 1)
+
     # Generate the coordinates for this tunnel.
-    for x, y in tcod.los.bresenham((x1, y1), (corner_x, corner_y)).tolist():
+    # Fist line: from start to corner.
+    for x, y in enlarge_corridor(
+            tcod.los.bresenham((x1, y1), (corner_x, corner_y)),
+            start_to_corner_enlarge_direction, width):
         yield x, y
-    for x, y in tcod.los.bresenham((corner_x, corner_y), (x2, y2)).tolist():
+
+    # Second line: from conrner to end.
+    for x, y in enlarge_corridor(
+            tcod.los.bresenham((corner_x, corner_y), (x2, y2)),
+            corner_to_end_enlarge_direction, width):
         yield x, y
+
+def enlarge_corridor(
+        line: Iterator[tuple[int, int]], direction: tuple[int, int], width: int
+) -> Iterator[tuple[int, int]]:
+    """Increase line width."""
+    for width_step in range(width):
+        for x, y in line.tolist():
+            yield x + width_step*direction[0], y + width_step*direction[1]
+
+def place_entities(
+        room: RectangularRoom, world: EntityManager, maximum_enemies: int,
+) -> None:
+    number_of_enemies = random.randint(0, maximum_enemies)
+
+    for i in range(number_of_enemies):
+        # Generate a random point inside the room to spawn the enemy.
+        x = random.randint(room.x1 + 1, room.x2 - 1)
+        y = random.randint(room.y1 + 1, room.y2 - 1)
+
+        if not any(entity.x == x and entity.y == y for entity in world.entities):
+            # Enemy spawn table.
+            if random.random() < 0.8:
+                pass # TODO: Place enemy here.
+            else:
+                pass # TODO: Place enemy here.
+

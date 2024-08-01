@@ -15,3 +15,4 @@ class MapComponent(Component):
                                fill_value=False, order="F")
         # Tiles that the player has seen before.
         self.explored = np.full((width, height), fill_value=False, order="F")
+

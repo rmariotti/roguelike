@@ -18,7 +18,7 @@ def main() -> None:
     """Application entry point."""
     # TODO: Load screen size from configuration file.
     screen_width, screen_height = map_width, map_height = (80, 50)
-    room_max_size, room_min_size, max_rooms = (10, 5, 8)
+    room_max_size, room_min_size, max_rooms = (10, 4, 4)
 
     tileset = tcod.tileset.load_tilesheet(
             # TODO: Hardcoded sting here.

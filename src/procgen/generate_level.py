@@ -6,11 +6,14 @@ import tcod
 from ecs import EntityManager
 from components import MapComponent
 from tiles import floor
+from components import PositionComponent
 
+from .generate_monster import generate_monster, MonsterType
 from .layouts.rectangular_room import RectangularRoom
 
 
 def generate_level(
+        world: EntityManager,
         max_rooms: int,
         room_min_size: int,
         room_max_size: int,
@@ -29,7 +32,7 @@ def generate_level(
         x = random.randint(0, level_map.width - room_width - 1)
         y = random.randint(0, level_map.height - room_height - 1)
 
-        # "RectangulaRoom" class makes rectangles easier to work with.
+        # RectangulaRoom class makes rectangles easier to work with.
         new_room = RectangularRoom(x, y, room_width, room_height)
 
         # Run through the other rooms to see if they intersect with this one.
@@ -40,6 +43,8 @@ def generate_level(
         # Dig out this rooms inner area.
         level_map.tiles[new_room.inner] = floor
 
+        place_entities(world, new_room, 2)
+
         if len(rooms) != 0: # All rooms after the first.
             # Dig out a corridor between this room and the previous one.
             for x, y in corridor_between(rooms[-1].center, new_room.center, 2):
@@ -49,6 +54,7 @@ def generate_level(
         rooms.append(new_room)
 
     return level_map
+
 
 def corridor_between(
         start: tuple[int, int], end: tuple[int, int], width: int
@@ -100,16 +106,18 @@ def corridor_between(
             corner_to_end_enlarge_direction, width):
         yield x, y
 
+
 def enlarge_corridor(
         line: Iterator[tuple[int, int]], direction: tuple[int, int], width: int
 ) -> Iterator[tuple[int, int]]:
-    """Increase line width."""
+    """Increase corridor width."""
     for width_step in range(width):
         for x, y in line.tolist():
             yield x + width_step*direction[0], y + width_step*direction[1]
 
+
 def place_entities(
-        room: RectangularRoom, world: EntityManager, maximum_enemies: int,
+        world: EntityManager, room: RectangularRoom, maximum_enemies: int,
 ) -> None:
     number_of_enemies = random.randint(0, maximum_enemies)
 
@@ -118,10 +126,18 @@ def place_entities(
         x = random.randint(room.x1 + 1, room.x2 - 1)
         y = random.randint(room.y1 + 1, room.y2 - 1)
 
-        if not any(entity.x == x and entity.y == y for entity in world.entities):
+        # TODO: Remove highly inefficent code.
+        is_tile_free = not any(
+            entity.get_component(PositionComponent).x == x and 
+            entity.get_component(PositionComponent).y == y 
+            for entity in world.get_entities_with_components(PositionComponent)
+        )
+
+        if is_tile_free:
             # Enemy spawn table.
             if random.random() < 0.8:
-                pass # TODO: Place enemy here.
+                world.entities.append(
+                    generate_monster(MonsterType.LARVA, position=(x, y)))
             else:
-                pass # TODO: Place enemy here.
-
+                world.entities.append(
+                    generate_monster(MonsterType.ADULT, position=(x, y)))

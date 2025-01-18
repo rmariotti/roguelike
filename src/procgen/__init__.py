@@ -1,1 +1,2 @@
 from procgen.generate_level import generate_level
+from procgen.generate_monster import generate_monster

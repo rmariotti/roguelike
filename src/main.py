@@ -27,6 +27,11 @@ def main() -> None:
 
     event_handler = EventHandler()
 
+    # Initialize ECS world.
+    entity_manager = EntityManager()
+    # Initialize systems.
+    systems = []
+
     # Initialize player character, motionless at the center ofthe screen. 
     player_character_entity = Entity(
             PositionComponent(int(screen_width / 2), int(screen_height / 2)),
@@ -39,6 +44,7 @@ def main() -> None:
 
     # Initialize game map.
     game_map = Entity(generate_level(
+        world=entity_manager,
         max_rooms=max_rooms,
         room_min_size=room_min_size,
         room_max_size=room_max_size,
@@ -46,11 +52,9 @@ def main() -> None:
         map_height=map_height
     ))
 
-    # Initialize ECS world.
-    entity_manager = EntityManager([player_character_entity, npc, game_map])
-    # Initialize systems.
-    systems = []
-
+    # Populate systems and world.
+    entity_manager.entities.extend([player_character_entity, npc, game_map])
+    
     event_system = EventSystem(entity_manager, event_handler)
     systems.append(event_system)
 

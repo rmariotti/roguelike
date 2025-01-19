@@ -24,4 +24,4 @@ class EventSystem:
                 continue
 
             for player_character_entity in player_character_entities:
-                action.perform(player_character_entity)
+                action.perform(self.entity_manager, player_character_entity)

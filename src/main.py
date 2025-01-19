@@ -36,7 +36,7 @@ def main() -> None:
     player_character_entity = Entity(
             PositionComponent(int(screen_width / 2), int(screen_height / 2)),
             IsPlayerCharacterTag(),
-            SpeedComponent(0), DirectionComponent(Direction.NORTH),
+            SpeedComponent(0, 1), DirectionComponent(Direction.NORTH),
             RenderingComponent("@", Palette.ORANGE_BRIGHT.value))
     npc = Entity(
             PositionComponent(int(screen_width / 3), int(screen_height / 3)),

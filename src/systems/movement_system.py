@@ -1,6 +1,4 @@
-from math import sin, cos
 import numpy as np
-from typing import Optional, Iterable
 
 import tcod
 
@@ -10,10 +8,8 @@ from components import (
     SpeedComponent,
     DirectionComponent,
     MapComponent,
-    IsBlockingTag
 )
-
-from ecs import Entity
+from utils import get_blocking_entities_at_position, calculate_destination
 
 
 class MovementSystem:
@@ -58,45 +54,21 @@ class MovementSystem:
                             (position_component.x, position_component.y))
                     pathfinder.resolve()
 
-                    # Calculate position delta using speed and direction.
-                    dx = round(speed_component.speed * 
-                               cos(direction_component.direction.radians))
-                    dy = round(speed_component.speed *
-                               sin(direction_component.direction.radians))
-
                     # Check that the point of arrival is reachable.
-                    arrival_x, arrival_y = (position_component.x + dx,
-                                            position_component.y + dy)
+                    arrival_x, arrival_y = calculate_destination(
+                        position_component.x,
+                        position_component.y,
+                        speed_component.walking_speed,
+                        direction_component.direction
+                    )
                     
                     if (
                         pathfinder.distance[arrival_x][arrival_y] != np.iinfo(pathfinder.distance.dtype).max and
-                        self.get_blocking_entities_at_position(arrival_x, arrival_y) is None
+                        get_blocking_entities_at_position(self.entity_manager, arrival_x, arrival_y) is None
                     ): 
                         # Update entity position.
-                        position_component.x += dx
-                        position_component.y += dy
+                        position_component.x = arrival_x
+                        position_component.y = arrival_y
 
                     # Stop the entity after movement.
                     speed_component.speed = 0
-
-    def get_blocking_entities_at_position(
-            self, x: int, y: int
-    ) -> Optional[Iterable[Entity]]:
-        blocking_entities = self.entity_manager.get_entities_with_components(
-            PositionComponent, IsBlockingTag
-        )
-        
-        blocking_entities_at_position = [
-            entity
-            for entity in blocking_entities
-            if (
-                (position := entity.get_component(PositionComponent)) and
-                (position.x, position.y) == (x, y)
-            )
-        ]
-
-        return (
-            blocking_entities_at_position
-            if blocking_entities_at_position
-            else None
-        )

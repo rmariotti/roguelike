@@ -38,28 +38,28 @@ def generate_monster(
     elif monster_type == MonsterType.CREEPER:
         return Entity(
             PositionComponent(*position),
-            SpeedComponent(0), DirectionComponent(direction),
+            SpeedComponent(0, 1), DirectionComponent(direction),
             RenderingComponent("c", Palette.ORANGE_BRIGHT.value),
             IsBlockingTag()
         )
     elif monster_type == MonsterType.ADULT:
         return Entity(
             PositionComponent(*position),
-            SpeedComponent(0), DirectionComponent(direction),
+            SpeedComponent(0, 1), DirectionComponent(direction),
             RenderingComponent("A", Palette.ORANGE_BRIGHT.value),
             IsBlockingTag()
         )
     elif monster_type == MonsterType.BREEDER:
         return Entity(
             PositionComponent(*position),
-            SpeedComponent(0), DirectionComponent(direction),
+            SpeedComponent(0, 1), DirectionComponent(direction),
             RenderingComponent("B", Palette.ORANGE_BRIGHT.value),
             IsBlockingTag()
         )
     elif monster_type == MonsterType.QUEEN:
         return Entity(
             PositionComponent(*position),
-            SpeedComponent(0), DirectionComponent(direction),
+            SpeedComponent(0, 1), DirectionComponent(direction),
             RenderingComponent("Q", Palette.CYAN_BRIGHT.value),
             IsBlockingTag()
         )

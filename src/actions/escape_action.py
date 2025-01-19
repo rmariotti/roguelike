@@ -1,10 +1,10 @@
 from typing_extensions import override
 
 from .action import Action
-from ecs import Entity
+from ecs import Entity, EntityManager
 
 
 class EscapeAction(Action):
     @override
-    def perform(self, entity: Entity) -> None:
+    def perform(self, world: EntityManager, entity: Entity) -> None:
         raise SystemExit()

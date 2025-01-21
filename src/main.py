@@ -25,8 +25,6 @@ def main() -> None:
             "assets/fonts/dejavu10x10_gs_tc.png",
             32, 8, tcod.tileset.CHARMAP_TCOD)
 
-    event_handler = EventHandler()
-
     # Initialize ECS world.
     entity_manager = EntityManager()
     # Initialize systems.
@@ -38,9 +36,7 @@ def main() -> None:
             IsPlayerCharacterTag(),
             SpeedComponent(0, 1), DirectionComponent(Direction.NORTH),
             RenderingComponent("@", Palette.ORANGE_BRIGHT.value))
-    npc = Entity(
-            PositionComponent(int(screen_width / 3), int(screen_height / 3)),
-            RenderingComponent("A", Palette.RED_BRIGHT.value))
+    
 
     # Initialize game map.
     game_map = Entity(generate_level(
@@ -53,8 +49,11 @@ def main() -> None:
     ))
 
     # Populate systems and world.
-    entity_manager.entities.extend([player_character_entity, npc, game_map])
-    
+    entity_manager.entities.extend([player_character_entity, game_map])
+
+    # Initialize the tcod event handler.
+    event_handler = EventHandler(world=entity_manager)
+
     event_system = EventSystem(entity_manager, event_handler)
     systems.append(event_system)
 

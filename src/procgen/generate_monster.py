@@ -6,7 +6,9 @@ from components import (
     DirectionComponent,
     SpeedComponent,
     RenderingComponent,
-    IsBlockingTag
+    IsBlockingTag,
+    HostileEnemyAI,
+    FighterComponent
 )
 from colors import Palette
 from utils import Direction
@@ -47,6 +49,8 @@ def generate_monster(
             PositionComponent(*position),
             SpeedComponent(0, 1), DirectionComponent(direction),
             RenderingComponent("A", Palette.ORANGE_BRIGHT.value),
+            FighterComponent(hp=30, defense=2, power=5),
+            HostileEnemyAI(),
             IsBlockingTag()
         )
     elif monster_type == MonsterType.BREEDER:

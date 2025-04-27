@@ -4,10 +4,11 @@ from abc import ABC
 from typing import Optional, Tuple, Iterable, TYPE_CHECKING
 from typing_extensions import override
 
-from utils import calculate_destination, get_blocking_entities_at_position
-from components import (
-    PositionComponent, DirectionComponent, SpeedComponent
-)
+from utils.math_helpers import calculate_destination
+from utils.ecs_helpers import get_blocking_entities_at_position
+from components.position_component import PositionComponent
+from components.direction_component import DirectionComponent
+from components.speed_component import SpeedComponent
 
 if TYPE_CHECKING:
     from ecs import Entity, EntityManager
@@ -50,8 +51,10 @@ class ActionWithDirection(Action):
             position_component.x,
             position_component.y,
             speed_component.walking_speed,
-            direction_component.direction
+            self.direction
         )
+
+        print("x: {0}, y: {1}, prevx: {2}, prevy: {3}, dir: {4}".format(destination_x, destination_y, position_component.x, position_component.y, direction_component.direction))
 
         return (destination_x, destination_y)
     

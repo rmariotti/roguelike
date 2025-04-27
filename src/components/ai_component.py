@@ -3,9 +3,13 @@ from typing import List, Tuple
 import numpy as np # type: ignore
 import tcod
 
-from ecs import Component, Entity
-from components import MapComponent, PositionComponent
-from actions import MeleeAction, MovementAction, WaitAction
+from ecs.component import Component
+from ecs.entity import Entity
+from components.map_component import MapComponent
+from components.position_component import PositionComponent
+from actions.melee_action import MeleeAction
+from actions.movement_action import MovementAction
+from actions.wait_action import WaitAction
 
 
 class AI(Component):

@@ -1,5 +1,5 @@
-from ecs import Component
-from utils import Direction
+from ecs.component import Component
+from utils.direction_enum import Direction
 
 
 class DirectionComponent(Component):

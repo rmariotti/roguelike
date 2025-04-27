@@ -8,11 +8,12 @@ import tcod.event
 from .escape_action import EscapeAction
 from .bump_action import BumpAction
 from .action import Action
-from components import IsPlayerCharacterTag
-from utils import Direction
+from components.is_player_character_tag import IsPlayerCharacterTag
+from utils.direction_enum import Direction
 
 if TYPE_CHECKING:
-    from ecs import EntityManager, Entity
+    from ecs.entity_manager import EntityManager
+    from ecs.entity import Entity
 
 
 class EventHandler(tcod.event.EventDispatch[Action]):

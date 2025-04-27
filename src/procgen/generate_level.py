@@ -3,10 +3,10 @@ import random
 
 import tcod
 
-from ecs import EntityManager
-from components import MapComponent
-from tiles import floor
-from components import PositionComponent
+from ecs.entity_manager import EntityManager
+from components.map_component import MapComponent
+from components.position_component import PositionComponent
+from tiles.tile_types import floor
 
 from .generate_monster import generate_monster, MonsterType
 from .layouts.rectangular_room import RectangularRoom

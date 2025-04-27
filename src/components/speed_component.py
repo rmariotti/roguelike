@@ -1,4 +1,4 @@
-from ecs import Component
+from ecs.component import Component
 
 
 class SpeedComponent(Component):

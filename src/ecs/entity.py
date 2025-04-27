@@ -1,5 +1,5 @@
 from typing import Optional, Type
-from ecs import Component
+from .component import Component
 
 
 class Entity:

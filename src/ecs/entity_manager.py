@@ -1,6 +1,7 @@
 from typing import Type
 
-from ecs import Entity, Component
+from .entity import Entity
+from .component import Component
 
 
 class EntityManager:

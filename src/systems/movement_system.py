@@ -2,14 +2,13 @@ import numpy as np
 
 import tcod
 
-from ecs import EntityManager
-from components import (
-    PositionComponent,
-    SpeedComponent,
-    DirectionComponent,
-    MapComponent,
-)
-from utils import get_blocking_entities_at_position, calculate_destination
+from ecs.entity_manager import EntityManager
+from components.position_component import PositionComponent
+from components.speed_component import SpeedComponent
+from components.direction_component import DirectionComponent
+from components.map_component import MapComponent
+from utils.ecs_helpers import get_blocking_entities_at_position
+from utils.math_helpers import calculate_destination
 
 
 class MovementSystem:

@@ -1,7 +1,9 @@
 from typing import Optional, Iterable
 
-from ecs import Entity, EntityManager
-from components import PositionComponent, IsBlockingTag
+from ecs.entity import Entity
+from ecs.entity_manager import EntityManager
+from components.position_component import PositionComponent
+from components.is_blocking_tag import IsBlockingTag
 
 
 def get_blocking_entities_at_position(

@@ -1,7 +1,9 @@
 from tcod.map import compute_fov
 
-from ecs import EntityManager
-from components import PositionComponent, MapComponent, IsPlayerCharacterTag 
+from ecs.entity_manager import EntityManager
+from components.position_component import PositionComponent
+from components.map_component import MapComponent
+from components.is_player_character_tag import IsPlayerCharacterTag 
 
 
 class FovSystem:

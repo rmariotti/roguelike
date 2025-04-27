@@ -12,4 +12,4 @@ class MeleeAction(ActionWithDirection):
             return
 
         for target in targets:
-            print(f"You kick {target.name}, much to its annoyance!")
+            print("You kick an enemy much to its annoyance!")

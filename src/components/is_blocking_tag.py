@@ -1,4 +1,4 @@
-from ecs import Component
+from ecs.component import Component
 
 class IsBlockingTag(Component):
     """Tag showing that the position held by this entity is blocked."""

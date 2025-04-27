@@ -1,17 +1,15 @@
 from enum import Enum
 
-from ecs import Entity
-from components import (
-    PositionComponent,
-    DirectionComponent,
-    SpeedComponent,
-    RenderingComponent,
-    IsBlockingTag,
-    HostileEnemyAI,
-    FighterComponent
-)
-from colors import Palette
-from utils import Direction
+from ecs.entity import Entity
+from components.position_component import PositionComponent
+from components.direction_component import DirectionComponent
+from components.speed_component import SpeedComponent
+from components.rendering_component import RenderingComponent
+from components.is_blocking_tag import IsBlockingTag
+from components.ai_component import HostileEnemyAI
+from components.fighter_component import FighterComponent
+from colors.palette import Palette
+from utils.direction_enum import Direction
 
 
 class MonsterType(Enum):

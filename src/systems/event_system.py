@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 
 from tcod import event
 
-from components import IsPlayerCharacterTag
-from actions import EventHandler
+from components.is_player_character_tag import IsPlayerCharacterTag
+from actions.event_handler import EventHandler
 
 if TYPE_CHECKING:
-    from ecs import EntityManager
+    from ecs.entity_manager import EntityManager
 
 
 class EventSystem:

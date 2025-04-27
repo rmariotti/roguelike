@@ -1,5 +1,5 @@
 from typing import Tuple
-from ecs import Component
+from ecs.component import Component
 
 
 class RenderingComponent(Component):

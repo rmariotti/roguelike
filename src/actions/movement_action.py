@@ -1,7 +1,8 @@
 from typing_extensions import override
 
-from components import SpeedComponent, DirectionComponent
-from utils import Direction, get_blocking_entities_at_position
+from components.speed_component import SpeedComponent
+from components.direction_component import DirectionComponent
+from utils.ecs_helpers import get_blocking_entities_at_position
 
 from .action import ActionWithDirection
 

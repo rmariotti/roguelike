@@ -1,7 +1,7 @@
 import numpy as np # type: ignore
 
-from ecs import Component
-from tiles import bound_wall
+from ecs.component import Component
+from tiles.tile_types import bound_wall
 
 
 class MapComponent(Component):

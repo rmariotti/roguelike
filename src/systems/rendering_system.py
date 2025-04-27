@@ -3,9 +3,11 @@ import numpy as np
 from tcod.context import Context
 from tcod.console import Console
 
-from ecs import EntityManager
-from components import PositionComponent, RenderingComponent, MapComponent
-from tiles import SHROUD
+from ecs.entity_manager import EntityManager
+from components.position_component import PositionComponent
+from components.rendering_component import RenderingComponent
+from components.map_component import MapComponent
+from tiles.tile_types import SHROUD
 
 
 class RenderingSystem:

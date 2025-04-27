@@ -1,6 +1,6 @@
 import numpy as np # type: ignore
 
-from colors import Palette
+from colors.palette import Palette
 
 
 # Tile graphics structured type compatible with Console.tiles_rgb.

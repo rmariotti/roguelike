@@ -14,7 +14,7 @@ from components.is_player_character_tag import IsPlayerCharacterTag
 from systems.movement_system import MovementSystem
 from systems.rendering_system import RenderingSystem
 from systems.fov_system import FovSystem
-from systems.event_system import EventSystem
+from systems.player_action_system import PlayerActionSystem
 from utils.direction_enum import Direction
 from procgen.generate_level import generate_level
 from colors.palette import Palette
@@ -60,7 +60,7 @@ def main() -> None:
     # Initialize the tcod event handler.
     event_handler = EventHandler(world=entity_manager)
 
-    event_system = EventSystem(entity_manager, event_handler)
+    event_system = PlayerActionSystem(entity_manager, event_handler)
     systems.append(event_system)
 
     movement_system = MovementSystem(entity_manager)

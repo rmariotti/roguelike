@@ -16,3 +16,6 @@ class Entity:
                 return component
 
         return None
+
+    def consume_component(self, component_type: Type[Component]) -> None:
+

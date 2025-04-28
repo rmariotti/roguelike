@@ -5,14 +5,15 @@ from typing import TYPE_CHECKING
 from tcod import event
 
 from components.is_player_character_tag import IsPlayerCharacterTag
+from components.can_act_tag import CanActTag
 from actions.event_handler import EventHandler
 
 if TYPE_CHECKING:
     from ecs.entity_manager import EntityManager
 
 
-class EventSystem:
-    """System handling tcod events by performing actions."""
+class PlayerActionSystem:
+    """System handling tcod event loop performing actions on player entity."""
     def __init__(
             self, entity_manager: EntityManager, event_handler: EventHandler
     ):
@@ -21,8 +22,8 @@ class EventSystem:
 
     def update(self) -> None:
         player_character_entities = (
-            self.entity_manager.get_entities_with_components(IsPlayerCharacterTag)
-        )
+            self.entity_manager.get_entities_with_components(
+                IsPlayerCharacterTag, CanActTag))
 
         for tcod_event in event.wait():
             action = self.event_handler.dispatch(tcod_event)
@@ -30,3 +31,4 @@ class EventSystem:
             if action is not None:
                 for player_character_entity in player_character_entities:
                     action.perform()
+                    player_character_entity

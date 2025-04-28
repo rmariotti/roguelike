@@ -7,7 +7,6 @@ from typing_extensions import override
 from utils.math_helpers import calculate_destination
 from utils.ecs_helpers import get_blocking_entities_at_position
 from components.position_component import PositionComponent
-from components.direction_component import DirectionComponent
 from components.speed_component import SpeedComponent
 
 if TYPE_CHECKING:
@@ -43,7 +42,6 @@ class ActionWithDirection(Action):
     @property
     def destination_xy(self) -> Tuple[int, int]:
         """Returns this actions destination."""
-        direction_component = self.entity.get_component(DirectionComponent)
         position_component = self.entity.get_component(PositionComponent)
         speed_component = self.entity.get_component(SpeedComponent)
 
@@ -53,8 +51,6 @@ class ActionWithDirection(Action):
             speed_component.walking_speed,
             self.direction
         )
-
-        print("x: {0}, y: {1}, prevx: {2}, prevy: {3}, dir: {4}".format(destination_x, destination_y, position_component.x, position_component.y, direction_component.direction))
 
         return (destination_x, destination_y)
     

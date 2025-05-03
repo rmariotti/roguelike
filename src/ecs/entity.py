@@ -18,4 +18,8 @@ class Entity:
         return None
 
     def consume_component(self, component_type: Type[Component]) -> None:
-
+        """Removes an entity's component of the given type."""
+        for component in self.components:
+            if isinstance(component, component_type):
+                self.components.remove(component)
+                return None

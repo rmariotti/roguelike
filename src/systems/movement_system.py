@@ -2,6 +2,7 @@ import numpy as np
 
 import tcod
 
+from ecs.system import System
 from ecs.entity_manager import EntityManager
 from components.position_component import PositionComponent
 from components.speed_component import SpeedComponent
@@ -11,7 +12,7 @@ from utils.ecs_helpers import get_blocking_entities_at_position
 from utils.math_helpers import calculate_destination
 
 
-class MovementSystem:
+class MovementSystem(System):
     """An object containing entity movement logic."""
     def __init__(self, entity_manager: EntityManager):
         self.entity_manager = entity_manager

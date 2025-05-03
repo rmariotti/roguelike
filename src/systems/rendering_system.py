@@ -4,13 +4,14 @@ from tcod.context import Context
 from tcod.console import Console
 
 from ecs.entity_manager import EntityManager
+from ecs.system import System
 from components.position_component import PositionComponent
 from components.rendering_component import RenderingComponent
 from components.map_component import MapComponent
 from tiles.tile_types import SHROUD
 
 
-class RenderingSystem:
+class RenderingSystem(System):
     """System handling rendering of entities."""
     def __init__(self, entity_manager: EntityManager, console: Console,
                  context: Context):

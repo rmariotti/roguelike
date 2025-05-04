@@ -119,8 +119,6 @@ class HostileEnemyAIComponent(AIComponent):
 
         distance = max(abs(dx), abs(dy)) # Chebyshev distance.
 
-        print("Distance: {0}".format(distance))
-
         if map_component.visible[moving_entity_position_component.x, moving_entity_position_component.y]:
             if distance <= 1:
                 return MeleeAction(
@@ -137,19 +135,13 @@ class HostileEnemyAIComponent(AIComponent):
                 destination_y=player_entity_position_component.y
             )
 
-            print("Path: {0}".format(self.cached_path))
-
         if self.cached_path:
             dest_x, dest_y = self.cached_path.pop(0)
-
-            print("Destination: {0}, {1}".format(dest_x, dest_y))
 
             direction: Direction = Direction.from_movement_delta(
                 dest_x - moving_entity_position_component.x,
                 dest_y - moving_entity_position_component.y
             )
-
-            print("Direction: {0}".format(direction))
 
             return MovementAction(
                 world=world,

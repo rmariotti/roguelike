@@ -17,8 +17,6 @@ class Direction(Enum):
 
     @classmethod
     def from_movement_delta(cls, delta_x: int, delta_y: int):
-        print("Deltas: {0}, {1}".format(delta_x, delta_y))
-
         # TODO: Extend this to support non unitary movement. <RM, 2025-05-04>
         if delta_x == 0 and delta_y > 0:
             return Direction.SOUTH

@@ -3,7 +3,7 @@ import numpy as np
 from tcod.context import Context
 from tcod.console import Console
 
-from ecs.entity_manager import EntityManager
+from ecs.world import World
 from ecs.system import System
 from components.position_component import PositionComponent
 from components.rendering_component import RenderingComponent
@@ -13,20 +13,26 @@ from tiles.tile_types import SHROUD
 
 class RenderingSystem(System):
     """System handling rendering of entities."""
-    def __init__(self, entity_manager: EntityManager, console: Console,
+    def __init__(self, world: World, console: Console,
                  context: Context):
-        self.entity_manager = entity_manager
+        self.world = world
         self.console = console
         self.context = context
+
+    def start(self):
+        return super().start()
+
+    def stop(self):
+        return super().stop()
     
     def update(self) -> None:
         self.render_maps()
         self.render_characters()
 
     def render_characters(self) -> None:
-        renderable_entities = self.entity_manager.get_entities_with_components(
+        renderable_entities = self.world.get_entities_with_components(
                 PositionComponent, RenderingComponent)
-        map_entities = self.entity_manager.get_entities_with_components(
+        map_entities = self.world.get_entities_with_components(
                 MapComponent)
 
         for entity in renderable_entities:
@@ -61,7 +67,7 @@ class RenderingSystem(System):
         with the "dark" colors.
         Otherwise, the default is "SHROUD".
         """
-        renderable_entities = self.entity_manager.get_entities_with_components(
+        renderable_entities = self.world.get_entities_with_components(
                 MapComponent)
 
         for entity in renderable_entities:

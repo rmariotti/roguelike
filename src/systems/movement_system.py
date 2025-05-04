@@ -3,7 +3,7 @@ import numpy as np
 import tcod
 
 from ecs.system import System
-from ecs.entity_manager import EntityManager
+from ecs.world import World
 from components.position_component import PositionComponent
 from components.speed_component import SpeedComponent
 from components.direction_component import DirectionComponent
@@ -14,14 +14,20 @@ from utils.math_helpers import calculate_destination
 
 class MovementSystem(System):
     """An object containing entity movement logic."""
-    def __init__(self, entity_manager: EntityManager):
-        self.entity_manager = entity_manager
+    def __init__(self, world: World):
+        self.world = world
+
+    def start(self):
+        return super().start()
+
+    def stop(self):
+        return super().stop()
     
     def update(self) -> None:
-        map_entities = self.entity_manager.get_entities_with_components(
+        map_entities = self.world.get_entities_with_components(
                 MapComponent)
 
-        moveable_entities = self.entity_manager.get_entities_with_components(
+        moveable_entities = self.world.get_entities_with_components(
                 PositionComponent, SpeedComponent, DirectionComponent)
 
         for map_entity in map_entities:
@@ -64,7 +70,7 @@ class MovementSystem(System):
                     
                     if (
                         pathfinder.distance[arrival_x][arrival_y] != np.iinfo(pathfinder.distance.dtype).max and
-                        get_blocking_entities_at_position(self.entity_manager, arrival_x, arrival_y) is None
+                        get_blocking_entities_at_position(self.world, arrival_x, arrival_y) is None
                     ): 
                         # Update entity position.
                         position_component.x = arrival_x

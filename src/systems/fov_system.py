@@ -1,7 +1,7 @@
 from tcod.map import compute_fov
 
 from ecs.system import System
-from ecs.entity_manager import EntityManager
+from ecs.world import World
 from components.position_component import PositionComponent
 from components.map_component import MapComponent
 from components.is_player_character_tag import IsPlayerCharacterTag 
@@ -9,15 +9,20 @@ from components.is_player_character_tag import IsPlayerCharacterTag
 
 class FovSystem(System):
     """An object containing player field of view logic."""
-    def __init__(self, entity_manager: EntityManager):
-        self.entity_manager = entity_manager
+    def __init__(self, world: World):
+        self.world = world
 
+    def start(self):
+        return super().start()
+
+    def stop(self):
+        return super().stop()
     
     def update(self) -> None:
         """Recompute the visible area based on the player's point of view."""
-        fov_entities = self.entity_manager.get_entities_with_components(
+        fov_entities = self.world.get_entities_with_components(
                 PositionComponent, IsPlayerCharacterTag)
-        map_entities = self.entity_manager.get_entities_with_components(
+        map_entities = self.world.get_entities_with_components(
                 MapComponent)
 
         for fov_entity in fov_entities:

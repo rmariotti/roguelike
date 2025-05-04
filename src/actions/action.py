@@ -10,12 +10,13 @@ from components.position_component import PositionComponent
 from components.speed_component import SpeedComponent
 
 if TYPE_CHECKING:
-    from ecs import Entity, EntityManager
-    from utils import Direction
+    from ecs.entity import Entity
+    from ecs.world import World
+    from utils.direction_enum import Direction
 
 
 class Action(ABC):
-    def __init__(self, entity: Entity, world: EntityManager) -> None:
+    def __init__(self, entity: Entity, world: World) -> None:
         super().__init__()
         self.entity = entity
         self.world = world
@@ -34,7 +35,7 @@ class Action(ABC):
 
 
 class ActionWithDirection(Action):
-    def __init__(self, entity: Entity, world: EntityManager, direction: Direction):
+    def __init__(self, world: World, entity: Entity, direction: Direction):
         super().__init__(entity, world)
 
         self.direction = direction

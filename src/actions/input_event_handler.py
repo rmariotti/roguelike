@@ -12,27 +12,28 @@ from components.is_player_character_tag import IsPlayerCharacterTag
 from utils.direction_enum import Direction
 
 if TYPE_CHECKING:
-    from ecs.entity_manager import EntityManager
+    from ecs.world import World
     from ecs.entity import Entity
 
 
-class EventHandler(tcod.event.EventDispatch[Action]):
+class InputEventHandler(tcod.event.EventDispatch[Action]):
     """Handles input events and maps key presses to actions in the game."""
-    def __init__(self, world: EntityManager):
+    def __init__(self, world: World):
         self.world = world
         self.player = self._get_player()
 
         # tcod key event to action mapping.
         self.key_action_map = {
             tcod.event.KeySym.UP: BumpAction(
-                self.player, self.world, direction=Direction.NORTH),
+                entity=self.player, world=self.world, direction=Direction.NORTH),
             tcod.event.KeySym.DOWN: BumpAction(
-                self.player, self.world, direction=Direction.SOUTH),
+                entity=self.player, world=self.world, direction=Direction.SOUTH),
             tcod.event.KeySym.LEFT: BumpAction(
-                self.player, self.world, direction=Direction.WEST),
+                entity=self.player, world=self.world, direction=Direction.WEST),
             tcod.event.KeySym.RIGHT: BumpAction(
-                self.player, self.world, direction=Direction.EAST),
-            tcod.event.KeySym.ESCAPE: EscapeAction(self.player, self.world),
+                entity=self.player, world=self.world, direction=Direction.EAST),
+            tcod.event.KeySym.ESCAPE: EscapeAction(
+                entity=self.player, world=self.world),
         }
 
     def _get_player(self) -> Entity:

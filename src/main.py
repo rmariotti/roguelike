@@ -3,18 +3,20 @@ from typing import Iterable
 
 import tcod
 
-from actions.event_handler import EventHandler
+from actions.input_event_handler import InputEventHandler
 from ecs.entity import Entity
-from ecs.entity_manager import EntityManager
+from ecs.world import World
 from components.position_component import PositionComponent 
 from components.speed_component import SpeedComponent
 from components.direction_component import DirectionComponent
 from components.rendering_component import RenderingComponent
 from components.is_player_character_tag import IsPlayerCharacterTag
+from components.actor_component import ActorComponent
 from systems.movement_system import MovementSystem
 from systems.rendering_system import RenderingSystem
 from systems.fov_system import FovSystem
 from systems.turn_system import TurnSystem
+from systems.action_system import ActionSystem
 from utils.direction_enum import Direction
 from procgen.generate_level import generate_level
 from colors.palette import Palette
@@ -32,12 +34,13 @@ def main() -> None:
         32, 8, tcod.tileset.CHARMAP_TCOD)
 
     # Initialize ECS world.
-    entity_manager = EntityManager()
+    world = World()
     # Initialize systems.
     systems = []
 
     # Initialize player character, motionless at the center ofthe screen. 
     player_character_entity = Entity(
+        ActorComponent(),
         PositionComponent(int(screen_width / 2), int(screen_height / 2)),
         IsPlayerCharacterTag(),
         SpeedComponent(0, 1), DirectionComponent(Direction.NORTH),
@@ -46,7 +49,7 @@ def main() -> None:
 
     # Initialize game map.
     game_map = Entity(generate_level(
-        world=entity_manager,
+        world=world,
         max_rooms=max_rooms,
         room_min_size=room_min_size,
         room_max_size=room_max_size,
@@ -55,18 +58,19 @@ def main() -> None:
     ))
 
     # Populate systems and world.
-    entity_manager.entities.extend([player_character_entity, game_map])
+    world.entities.extend([player_character_entity, game_map])
 
     # Initialize the tcod event handler.
-    event_handler = EventHandler(world=entity_manager)
+    input_event_handler = InputEventHandler(world=world)
 
-    event_system = TurnSystem(entity_manager, event_handler)
-    systems.append(event_system)
+    action_system = ActionSystem(world)
+    turn_system = TurnSystem(world, action_system, input_event_handler)
+    systems.extend((action_system, turn_system))
 
-    movement_system = MovementSystem(entity_manager)
+    movement_system = MovementSystem(world)
     systems.append(movement_system)
 
-    fov_system = FovSystem(entity_manager)
+    fov_system = FovSystem(world)
     systems.append(fov_system)
 
     with tcod.context.new_terminal(
@@ -79,7 +83,7 @@ def main() -> None:
         root_console = tcod.console.Console(screen_width, screen_height, order="F")
 
         # Initialize rendering systems.
-        rendering_system = RenderingSystem(entity_manager, root_console, context)
+        rendering_system = RenderingSystem(world, root_console, context)
         systems.append(rendering_system)
 
         while True:
@@ -89,7 +93,7 @@ def main() -> None:
 def update_systems(systems: Iterable):
     """Helper function to update all systems in ECS world."""
     for system in systems:
-        system.update()
+        system.update()        
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ class System(ABC):
     have no data.
     """
     def __init__(self):
-        pass
+        super().__init__()
 
     @abstractmethod
     def start(self):

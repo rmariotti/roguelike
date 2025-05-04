@@ -4,7 +4,7 @@ from .entity import Entity
 from .component import Component
 
 
-class EntityManager:
+class World:
     """Collection of entities."""
     def __init__(self, entities: list[Entity] = []):
         self.entities = entities

@@ -3,7 +3,7 @@ import random
 
 import tcod
 
-from ecs.entity_manager import EntityManager
+from ecs.world import World
 from components.map_component import MapComponent
 from components.position_component import PositionComponent
 from tiles.tile_types import floor
@@ -13,7 +13,7 @@ from .layouts.rectangular_room import RectangularRoom
 
 
 def generate_level(
-        world: EntityManager,
+        world: World,
         max_rooms: int,
         room_min_size: int,
         room_max_size: int,
@@ -117,7 +117,7 @@ def enlarge_corridor(
 
 
 def place_entities(
-        world: EntityManager, room: RectangularRoom, maximum_enemies: int,
+        world: World, room: RectangularRoom, maximum_enemies: int,
 ) -> None:
     number_of_enemies = random.randint(0, maximum_enemies)
 

@@ -15,6 +15,30 @@ class Direction(Enum):
         self.radians = radians
         self.edge_map = edge_map
 
+    @classmethod
+    def from_movement_delta(cls, delta_x: int, delta_y: int):
+        print("Deltas: {0}, {1}".format(delta_x, delta_y))
+
+        # TODO: Extend this to support non unitary movement. <RM, 2025-05-04>
+        if delta_x == 0 and delta_y > 0:
+            return Direction.SOUTH
+        elif delta_x == 0 and delta_y < 0:
+            return Direction.NORTH
+        elif delta_x > 0 and delta_y == 0:
+            return Direction.EAST
+        elif delta_x > 0 and delta_y > 0:
+            return Direction.SOUTH_EAST
+        elif delta_x > 0 and delta_y < 0:
+            return Direction.NORTH_EAST
+        elif delta_x < 0 and delta_y == 0:
+            return Direction.WEST
+        elif delta_x < 0 and delta_y > 0:
+            return Direction.SOUTH_WEST
+        elif delta_x < 0 and delta_y < 0:
+            return Direction.NORTH_WEST
+        else:
+            raise ValueError("Unable to parse direction.")
+
     # Cardinal directions.
     NORTH = 0, float(3/2*pi),[
             [0, 1, 0],

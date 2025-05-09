@@ -3,23 +3,23 @@ from typing import Iterable
 
 import tcod
 
-from actions.input_event_handler import InputEventHandler
+from actions.input_event_handler import GameInputEventHandler
+from actions.input_event_handler import UIInputEventHandler
 from ecs.entity import Entity
 from ecs.world import World
-from components.position_component import PositionComponent 
-from components.speed_component import SpeedComponent
-from components.direction_component import DirectionComponent
-from components.rendering_component import RenderingComponent
-from components.is_player_character_tag import IsPlayerCharacterTag
-from components.actor_component import ActorComponent
 from systems.movement_system import MovementSystem
+from systems.death_system import DeathSystem
 from systems.rendering_system import RenderingSystem
 from systems.fov_system import FovSystem
 from systems.turn_system import TurnSystem
 from systems.action_system import ActionSystem
-from utils.direction_enum import Direction
+from systems.ui_input_system import UiInputSystem
+from systems.tcod_event_dispatch_system import EventDispatchSystem
+from systems.ui_system import UISystem
+from components.ui_label_component import UILabelComponent
+from components.needs_player_health_tag import NeedsPlayerHealthTag
 from procgen.generate_level import generate_level
-from colors.palette import Palette
+from procgen.generate_player_character import generate_player_character
 
 
 def main() -> None:
@@ -38,14 +38,10 @@ def main() -> None:
     # Initialize systems.
     systems = []
 
-    # Initialize player character, motionless at the center ofthe screen. 
-    player_character_entity = Entity(
-        ActorComponent(),
-        PositionComponent(int(screen_width / 2), int(screen_height / 2)),
-        IsPlayerCharacterTag(),
-        SpeedComponent(0, 1), DirectionComponent(Direction.NORTH),
-        RenderingComponent("@", Palette.ORANGE_BRIGHT.value))
-    
+    # Initialize player character, motionless at the center ofthe screen.
+    player_character_entity = generate_player_character(
+        (int(screen_width/2), int(screen_height/2))
+    )
 
     # Initialize game map.
     game_map = Entity(generate_level(
@@ -61,39 +57,69 @@ def main() -> None:
     world.entities.extend([player_character_entity, game_map])
 
     # Initialize the tcod event handler.
-    input_event_handler = InputEventHandler(world=world)
+    game_input_event_handler = GameInputEventHandler(world=world)
+    ui_input_event_handler = UIInputEventHandler(world=world)
 
+    event_dispatch_system = EventDispatchSystem()
+
+    ui_input_system = UiInputSystem(
+        world=world, event_handler=ui_input_event_handler,
+        event_dispatcher=event_dispatch_system
+    )
     action_system = ActionSystem(world)
-    turn_system = TurnSystem(world, action_system, input_event_handler)
-    systems.extend((action_system, turn_system))
+    turn_system = TurnSystem(
+        world=world, action_system=action_system,
+        event_handler=game_input_event_handler,
+        event_dispatcher=event_dispatch_system
+    )
+    systems.extend((
+        event_dispatch_system, ui_input_system, action_system, turn_system))
 
     movement_system = MovementSystem(world)
     systems.append(movement_system)
 
+    death_system = DeathSystem(world)
+    systems.append(death_system)
+
     fov_system = FovSystem(world)
     systems.append(fov_system)
 
-    with tcod.context.new_terminal(
-            screen_width,
-            screen_height,
+    ui_system = UISystem(world=world)
+    systems.append(ui_system)
+
+    # Build game UI.
+    player_health_label = Entity(
+        UILabelComponent(
+            template="HP: {0}/{1}",
+            position=(1, 47)
+        ),
+        NeedsPlayerHealthTag()
+    )
+    world.entities.append(player_health_label)
+
+    with tcod.context.new(
+            columns=screen_width,
+            rows=screen_height,
             tileset=tileset,
             title="Roguelike Demo",
             vsync=True,
     ) as context:
-        root_console = tcod.console.Console(screen_width, screen_height, order="F")
+        root_console = tcod.console.Console(
+            screen_width, screen_height, order="F")
 
         # Initialize rendering systems.
         rendering_system = RenderingSystem(world, root_console, context)
         systems.append(rendering_system)
 
         while True:
-            update_systems(systems) 
+            update_systems(systems)
+
 
 # TODO: Remove this function and build proper ECS world support.
 def update_systems(systems: Iterable):
     """Helper function to update all systems in ECS world."""
     for system in systems:
-        system.update()        
+        system.update()
 
 
 if __name__ == "__main__":

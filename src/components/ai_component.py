@@ -38,11 +38,12 @@ class AIComponent(Component):
 
         If there is no valid path returns an empty list.
 
-        :param map_component: The map component for the game world.
-        :param moving_entity: The entity seeking a path (owns this AI component).
-        :param blocking_entities: A list of entities that block movement.
-        :param destination_x: The x coordinate of the target position.
-        :param destination_y: The y coordinate of the target position.
+        Arguments:
+        map_component -- the map component for the game world
+        moving_entity -- the entity seeking a path (owns this AI component)
+        blocking_entities -- a list of entities that block movement
+        destination_x -- the x coordinate of the target position
+        destination_y -- the y coordinate of the target position
         """
         
         # Copy the walkable array.
@@ -98,6 +99,7 @@ class AIComponent(Component):
 class HostileEnemyAIComponent(AIComponent):
     def __init__(self):
         super().__init__()
+
         self.cached_path: List[Tuple[int, int]] = []
 
     def move_towards_player_and_attack(

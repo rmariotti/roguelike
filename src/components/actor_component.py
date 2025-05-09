@@ -11,6 +11,7 @@ class ActorComponent(Component):
     """
     def __init__(self, energy=0, upkeep=1, treshold=10):
         super().__init__()
+
         self.energy = energy
         self.upkeep = upkeep
         self.treshold = treshold

@@ -7,8 +7,10 @@ from components.speed_component import SpeedComponent
 from components.rendering_component import RenderingComponent
 from components.is_blocking_tag import IsBlockingTag
 from components.ai_component import HostileEnemyAIComponent
-from components.fighter_component import FighterComponent
+from components.health_component import HealthComponent
 from components.actor_component import ActorComponent
+from components.description_component import DescriptionComponent
+from components.melee_attack_component import MeleeAttackComponent
 from colors.palette import Palette
 from utils.direction_enum import Direction
 
@@ -33,10 +35,15 @@ def generate_monster(
     if monster_type == MonsterType.LARVA:
         return Entity(
             ActorComponent(treshold=20),
+            DescriptionComponent(
+                name="larva",
+                description="a xenomorph's larva"
+            ),
             HostileEnemyAIComponent(),
             SpeedComponent(0, 1), DirectionComponent(direction),
             PositionComponent(*position),
             RenderingComponent("l", Palette.ORANGE_BRIGHT.value),
+            HealthComponent(hp=30),
             IsBlockingTag()
         )
     elif monster_type == MonsterType.CREEPER:
@@ -51,11 +58,16 @@ def generate_monster(
     elif monster_type == MonsterType.ADULT:
         return Entity(
             ActorComponent(treshold=20),
+            DescriptionComponent(
+                name="adult",
+                description="a fully grown xenomorph's"
+            ),
+            MeleeAttackComponent(damage=1),
             HostileEnemyAIComponent(),
             PositionComponent(*position),
             SpeedComponent(0, 1), DirectionComponent(direction),
             RenderingComponent("A", Palette.ORANGE_BRIGHT.value),
-            FighterComponent(hp=30, defense=2, power=5),
+            HealthComponent(hp=30),
             HostileEnemyAIComponent(),
             IsBlockingTag()
         )

@@ -8,13 +8,17 @@ from ecs.system import System
 from components.position_component import PositionComponent
 from components.rendering_component import RenderingComponent
 from components.map_component import MapComponent
+from components.ui_label_component import UILabelComponent
 from tiles.tile_types import SHROUD
 
 
 class RenderingSystem(System):
     """System handling rendering of entities."""
-    def __init__(self, world: World, console: Console,
-                 context: Context):
+    def __init__(
+            self, world: World, console: Console, context: Context
+    ):
+        super().__init__()
+
         self.world = world
         self.console = console
         self.context = context
@@ -24,51 +28,60 @@ class RenderingSystem(System):
 
     def stop(self):
         return super().stop()
-    
+
     def update(self) -> None:
         self.render_maps()
         self.render_characters()
+        self.render_ui()
+        self.context.present(self.console)
+        self.console.clear()
 
     def render_characters(self) -> None:
-        renderable_entities = self.world.get_entities_with_components(
-                PositionComponent, RenderingComponent)
+        renderable_entities = sorted(
+            self.world.get_entities_with_components(
+                PositionComponent, RenderingComponent
+            ),
+            key=lambda x: x.get_component(
+                RenderingComponent).render_priority.value
+        )
+
         map_entities = self.world.get_entities_with_components(
-                MapComponent)
+            MapComponent)
 
         for entity in renderable_entities:
             position_component: PositionComponent = entity.get_component(
-                    PositionComponent)
+                PositionComponent)
             rendering_component: RenderingComponent = entity.get_component(
-                    RenderingComponent)
+                RenderingComponent)
 
             for map_entity in map_entities:
                 map_component: MapComponent = map_entity.get_component(
-                        MapComponent)
+                    MapComponent)
+
                 # Only print entities that are in FOV.
                 if map_component.visible[
-                        position_component.x, position_component.y]:
+                    position_component.x,
+                    position_component.y
+                ]:
                     self.console.print(
-                            position_component.x,
-                            position_component.y,
-                            rendering_component.char, 
-                            fg=rendering_component.color
+                        position_component.x,
+                        position_component.y,
+                        rendering_component.char,
+                        fg=rendering_component.color
                     )
-
-        self.context.present(self.console)
-        self.console.clear()
 
     def render_maps(self) -> None:
         """
         Renders the map.
 
-        If a tile is in the "visible" array, then draw it with the 
+        If a tile is in the "visible" array, then draw it with the
         "light" colors.
-        If it isn't, but it's in the "explored" array, then draw it 
+        If it isn't, but it's in the "explored" array, then draw it
         with the "dark" colors.
         Otherwise, the default is "SHROUD".
         """
         renderable_entities = self.world.get_entities_with_components(
-                MapComponent)
+            MapComponent)
 
         for entity in renderable_entities:
             map_component: MapComponent = entity.get_component(MapComponent)
@@ -87,3 +100,19 @@ class RenderingSystem(System):
                     )
             )
 
+    def render_ui(self) -> None:
+        ui_label_entities = self.world.get_entities_with_components(
+            UILabelComponent
+        )
+
+        for ui_label_entity in ui_label_entities:
+            ui_label_component: UILabelComponent = (
+                ui_label_entity.get_component(UILabelComponent)
+            )
+
+            if ui_label_component:
+                self.console.print(
+                    x=ui_label_component.position[0],
+                    y=ui_label_component.position[1],
+                    string=ui_label_component.text
+                )

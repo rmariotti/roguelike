@@ -22,18 +22,19 @@ class MovementSystem(System):
 
     def stop(self):
         return super().stop()
-    
+
     def update(self) -> None:
         map_entities = self.world.get_entities_with_components(
-                MapComponent)
+            MapComponent)
 
         moveable_entities = self.world.get_entities_with_components(
-                PositionComponent, SpeedComponent, DirectionComponent)
+            PositionComponent, SpeedComponent, DirectionComponent)
 
         for map_entity in map_entities:
             # Get the active map component, to check if the moving entities
             # are moving towards blocked tiles.
-            map_component: MapComponent = map_entity.get_component(MapComponent)
+            map_component: MapComponent = map_entity.get_component(
+                MapComponent)
 
             for entity in moveable_entities:
                 # Retrieve relevant components.
@@ -42,22 +43,22 @@ class MovementSystem(System):
                 # Check that speed is non-zero.
                 if speed_component.speed != 0:
                     direction_component = entity.get_component(
-                            DirectionComponent)
+                        DirectionComponent)
                     position_component = entity.get_component(
-                            PositionComponent)
+                        PositionComponent)
 
                     # Setup tcod pathfinding.
                     graph = tcod.path.CustomGraph(
-                            shape=(map_component.width, map_component.height),
-                            order="F"
+                        shape=(map_component.width, map_component.height),
+                        order="F"
                     )
                     graph.add_edges(
-                            edge_map=direction_component.direction.edge_map,
-                            cost=map_component.tiles["walkable"].astype(int)
+                        edge_map=direction_component.direction.edge_map,
+                        cost=map_component.tiles["walkable"].astype(int)
                     )
                     pathfinder = tcod.path.Pathfinder(graph)
                     pathfinder.add_root(
-                            (position_component.x, position_component.y))
+                        (position_component.x, position_component.y))
                     pathfinder.resolve()
 
                     # Check that the point of arrival is reachable.
@@ -67,11 +68,15 @@ class MovementSystem(System):
                         speed_component.walking_speed,
                         direction_component.direction
                     )
-                    
+
+                    max_distance = np.iinfo(pathfinder.distance.dtype).max
+                    distance = pathfinder.distance[arrival_x][arrival_y]
+                    blocking_entityies = get_blocking_entities_at_position(
+                        self.world, arrival_x, arrival_y)
+
                     if (
-                        pathfinder.distance[arrival_x][arrival_y] != np.iinfo(pathfinder.distance.dtype).max and
-                        get_blocking_entities_at_position(self.world, arrival_x, arrival_y) is None
-                    ): 
+                        distance != max_distance and blocking_entityies is None
+                    ):
                         # Update entity position.
                         position_component.x = arrival_x
                         position_component.y = arrival_y

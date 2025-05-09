@@ -38,12 +38,13 @@ class ActionSystem(System):
             actor_component.energy += actor_component.upkeep
 
             if actor_component.energy >= actor_component.treshold:
-                actor_component.energy = 0 # Reset energy after gaining a turn.
+                # Reset energy after gaining a turn.
+                actor_component.energy = 0
                 self.ready_queue.append(actor)
 
     def has_ready_actor(self) -> bool:
         return len(self.ready_queue) > 0
-    
+
     def pop_ready_actor(self) -> Optional[Entity]:
         if self.ready_queue:
             return self.ready_queue.popleft()

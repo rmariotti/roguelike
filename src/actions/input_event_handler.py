@@ -53,27 +53,14 @@ WAIT_KEYS = {
     tcod.event.KeySym.CLEAR
 }
 
+
 class InputEventHandler(tcod.event.EventDispatch[Action]):
     """Handles input events and maps key presses to actions in the game."""
     def __init__(self, world: World):
         self.world = world
         self.player = self._get_player()
-
         # tcod key event to action mapping.
-        self.key_action_map = {
-            tcod.event.KeySym.ESCAPE: EscapeAction(
-                entity=self.player, world=self.world),
-        }
-        
-        for key, direction in MOVE_KEYS.items():
-            self.key_action_map[key] = BumpAction(
-                entity=self.player, world=self.world, direction=direction
-            )
-
-        for key in WAIT_KEYS:
-            self.key_action_map[key] = WaitAction(
-                entity=self.player, world=self.world
-            )
+        self.key_action_map = {}
 
     def _get_player(self) -> Entity:
         player_entities = self.world.get_entities_with_components(
@@ -89,5 +76,30 @@ class InputEventHandler(tcod.event.EventDispatch[Action]):
 
     @override
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
-        # Usa la mappa per trovare l'azione in base al tasto
         return self.key_action_map.get(event.sym, None)
+
+
+class GameInputEventHandler(InputEventHandler):
+    """Handles input events and maps keys to actions with in game effects."""
+    def __init__(self, world: World):
+        super().__init__(world)
+
+        for key, direction in MOVE_KEYS.items():
+            self.key_action_map[key] = BumpAction(
+                entity=self.player, world=self.world, direction=direction
+            )
+
+        for key in WAIT_KEYS:
+            self.key_action_map[key] = WaitAction(
+                entity=self.player, world=self.world
+            )
+
+
+class UIInputEventHandler(InputEventHandler):
+    """Handles inputs and maps keys to actions with effects on game ui."""
+    def __init__(self, world: World):
+        super().__init__(world)
+
+        self.key_action_map[tcod.event.KeySym.ESCAPE] = EscapeAction(
+            entity=self.player, world=self.world
+        )

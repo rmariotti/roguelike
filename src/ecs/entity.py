@@ -7,7 +7,9 @@ class Entity:
     def __init__(self, *components: Component):
         self.components = list(components)
 
-    def get_component(self, component_type: Type[Component]) -> Optional[Component]:
+    def get_component(
+            self, component_type: Type[Component]
+    ) -> Optional[Component]:
         """Returns entity's component of given type."""
         # TODO: Index components so that accessing them does not
         # require linear search.

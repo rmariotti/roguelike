@@ -1,4 +1,5 @@
 import numpy as np
+import textwrap
 
 from tcod.context import Context
 from tcod.console import Console
@@ -10,6 +11,9 @@ from components.rendering_component import RenderingComponent
 from components.map_component import MapComponent
 from components.ui_label_component import UILabelComponent
 from components.ui_bar_component import UIBarComponent
+from components.message_log_component import MessageLogComponent
+from components.ui_message_log_component import UIMessageLogComponent
+from colors.message_presentation import MessagePresentation
 from tiles.tile_types import SHROUD
 
 
@@ -102,6 +106,7 @@ class RenderingSystem(System):
             )
 
     def render_ui(self) -> None:
+        # Render ui bars.
         ui_bar_entities = self.world.get_entities_with_components(
             UIBarComponent
         )
@@ -133,6 +138,7 @@ class RenderingSystem(System):
                         bg=ui_bar_component.fill_color
                     )
 
+        # Render ui labels.
         ui_label_entities = self.world.get_entities_with_components(
             UILabelComponent
         )
@@ -148,3 +154,61 @@ class RenderingSystem(System):
                     y=ui_label_component.position[1],
                     string=ui_label_component.text
                 )
+
+        # Render ui message logs.
+        self.render_message_logs()
+
+    def render_message_logs(self) -> None:
+        """
+        Render message logs.
+        The messages are rendered starting at the last message and
+        working backwards.
+        """
+        ui_message_log_entities = self.world.get_entities_with_components(
+            UIMessageLogComponent,
+            MessageLogComponent
+        )
+
+        for ui_message_log_entity in ui_message_log_entities:
+            message_log_component: MessageLogComponent = (
+                ui_message_log_entity.get_component(MessageLogComponent)
+            )
+            ui_message_log_component: UIMessageLogComponent = (
+                ui_message_log_entity.get_component(UIMessageLogComponent)
+            )
+
+            if ui_message_log_component:
+                render_message_log_component_helper(
+                    console=self.console,
+                    message_log_component=message_log_component,
+                    ui_message_log_component=ui_message_log_component
+                )
+
+
+def render_message_log_component_helper(
+        console: Console,
+        message_log_component: MessageLogComponent,
+        ui_message_log_component: UIMessageLogComponent
+) -> None:
+    y_offset = ui_message_log_component.height - 1
+    reversed_messages = reversed(
+        message_log_component.message_log.messages
+    )
+
+    for message in reversed_messages:
+        wrapped_text = textwrap.wrap(
+            message.full_text, ui_message_log_component.width
+        )
+        for line in reversed(wrapped_text):
+            console.print(
+                x=ui_message_log_component.position[0],
+                y=ui_message_log_component.position[1] + y_offset,
+                string=line,
+                fg=MessagePresentation.get_message_color_by_category(
+                    message_category=message.message_category
+                )
+            )
+
+            y_offset -= 1
+            if y_offset < 0:
+                return  # No more space to print messages.

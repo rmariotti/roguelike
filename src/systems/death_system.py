@@ -5,7 +5,9 @@ from components.actor_component import ActorComponent
 from components.description_component import DescriptionComponent
 from components.rendering_component import RenderingComponent
 from components.is_blocking_tag import IsBlockingTag
+from components.message_log_component import MessageLogComponent
 from utils.render_priority_enum import RenderPriority
+from utils.ecs_helpers import get_default_component
 
 
 class DeathSystem(System):
@@ -33,9 +35,16 @@ class DeathSystem(System):
                 entity.get_component(DescriptionComponent))
 
             if health_component.hp <= 0:
-                if description_component:
-                    print("{} is dead".format(description_component.name))
-
+                message_log_component: MessageLogComponent = (
+                        get_default_component(
+                            world=self.world,
+                            component_type=MessageLogComponent
+                        )
+                    )
+                if description_component and message_log_component:
+                    message_log_component.message_log.add_message(
+                        text="{} is dead".format(description_component.name)
+                    )
                 # Prevent the entity from acting again and render a corpse.
                 entity.consume_component(ActorComponent)
                 entity.consume_component(HealthComponent)

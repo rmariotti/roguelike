@@ -21,19 +21,19 @@ class World:
         for entity in self.entities:
             has_required_components = True
 
-            # Check if the entity at least one component matching the 
+            # Check if the entity at least one component matching the
             # required component for each required component.
             for required_component_type in components_types:
                 has_required_component = False
 
-                # Check if one of the components in entity is of the 
+                # Check if one of the components in entity is of the
                 # required component type.
                 for component in entity.components:
                     has_required_component = (has_required_component or
                                               isinstance(
                                                   component,
                                                   required_component_type))
-                
+
                 has_required_components = (has_required_components and
                                            has_required_component)
 

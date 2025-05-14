@@ -72,6 +72,9 @@ class UISystem(System):
 
             for bar in player_health_ui_bars:
                 bar: UIBarComponent
+
+                width_per_hp = 1 / health_component.max_hp * bar.width
+
                 bar.fill_width = int(
-                    float(health_component.hp) / health_component.max_hp * bar.width
+                    float(health_component.hp) * width_per_hp
                 )

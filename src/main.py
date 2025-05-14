@@ -21,6 +21,10 @@ from systems.ui_system import UISystem
 from components.ui_label_component import UILabelComponent
 from components.ui_bar_component import UIBarComponent
 from components.needs_player_health_tag import NeedsPlayerHealthTag
+from components.ui_message_log_component import UIMessageLogComponent
+from components.message_log_component import MessageLogComponent
+from components.is_default_tag import DefaultTag
+from messages.message_log import MessageLog
 from procgen.generate_level import generate_level
 from procgen.generate_player_character import generate_player_character
 from colors.ui_colors import UIColors
@@ -43,7 +47,7 @@ def main() -> None:
 
     # Initialize ECS world.
     world = World()
-    
+
     # Initialize player character, motionless at the center ofthe screen.
     player_character_entity = generate_player_character(
         (int(screen_width/2), int(screen_height/2))
@@ -65,7 +69,6 @@ def main() -> None:
     # Initialize systems.
     systems = initialize_systems(world=world)
 
-
     # Build game UI.
     player_health_label = Entity(
         UILabelComponent(
@@ -82,12 +85,30 @@ def main() -> None:
             width=20,
             height=1,
             characters=1,
-            background_color=UIColors.HEALTH_BAR_EMPTY.value.value,
-            fill_color=UIColors.HEALTH_BAR_FILL.value.value
+            background_color=UIColors.HEALTH_BAR_EMPTY,
+            fill_color=UIColors.HEALTH_BAR_FILL
         ),
         NeedsPlayerHealthTag()
     )
     world.entities.append(player_health_bar)
+
+    message_log = MessageLog()
+    message_log_entity = Entity(
+        DefaultTag(
+            MessageLogComponent
+        ),
+        MessageLogComponent(
+            message_log=message_log
+        ),
+        UIMessageLogComponent(
+            position=(21, 45),
+            width=40,
+            height=5,
+        )
+    )
+    world.entities.append(message_log_entity)
+
+    message_log.add_message("Hello world!")
 
     with tcod.context.new(
             columns=screen_width,

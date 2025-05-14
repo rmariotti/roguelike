@@ -4,11 +4,18 @@ from .action import ActionWithDirection
 from components.melee_attack_component import MeleeAttackComponent
 from components.health_component import HealthComponent
 from components.description_component import DescriptionComponent
+from components.message_log_component import MessageLogComponent
+from utils.ecs_helpers import get_default_component
 
 
 class MeleeAction(ActionWithDirection):
     @override
     def perform(self):
+        message_log_component: MessageLogComponent = get_default_component(
+            world=self.world,
+            component_type=MessageLogComponent
+        )
+
         actor_melee_attack_component: MeleeAttackComponent | None = (
             self.entity.get_component(MeleeAttackComponent)
         )
@@ -34,11 +41,18 @@ class MeleeAction(ActionWithDirection):
                     actor_melee_attack_component.damage
                 )
 
-            if target_description_component and actor_description_component:
-                print(
-                    actor_melee_attack_component.description.format(
-                        actor_description_component.name,
-                        target_description_component.name
-                    ))
-            else:
-                print("Something takes damage!")
+            if message_log_component:
+                if (
+                    target_description_component and
+                    actor_description_component
+                ):
+                    message_log_component.message_log.add_message(
+                        text=actor_melee_attack_component.description.format(
+                            actor_description_component.name,
+                            target_description_component.name
+                        ),
+                    )
+                else:
+                    message_log_component.message_log.add_message(
+                        text="Something takes damage!"
+                    )

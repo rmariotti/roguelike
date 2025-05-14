@@ -16,11 +16,11 @@ from utils.direction_enum import Direction
 
 
 class MonsterType(Enum):
-    LARVA=0
-    CREEPER=1
-    ADULT=2
-    BREEDER=3
-    QUEEN=4
+    LARVA = 0
+    CREEPER = 1
+    ADULT = 2
+    BREEDER = 3
+    QUEEN = 4
 
 
 def generate_monster(

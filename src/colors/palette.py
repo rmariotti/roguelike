@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Palette(Enum):
+class Palette(tuple[int, int, int], Enum):
     """
     Game color palette (urbex-16 by Rustocat).
 

@@ -9,6 +9,7 @@ from components.position_component import PositionComponent
 from components.rendering_component import RenderingComponent
 from components.map_component import MapComponent
 from components.ui_label_component import UILabelComponent
+from components.ui_bar_component import UIBarComponent
 from tiles.tile_types import SHROUD
 
 
@@ -101,6 +102,37 @@ class RenderingSystem(System):
             )
 
     def render_ui(self) -> None:
+        ui_bar_entities = self.world.get_entities_with_components(
+            UIBarComponent
+        )
+
+        for ui_bar_entity in ui_bar_entities:
+            ui_bar_component: UIBarComponent = (
+                ui_bar_entity.get_component(UIBarComponent)
+            )
+
+            if ui_bar_component:
+                # Draw unfilled part of the bar.
+                self.console.draw_rect(
+                    x=ui_bar_component.position[0],
+                    y=ui_bar_component.position[1],
+                    width=ui_bar_component.width,
+                    height=ui_bar_component.height,
+                    ch=ui_bar_component.characters,
+                    bg=ui_bar_component.background_color
+                )
+
+                # Draw filled part of the bar.
+                if ui_bar_component.fill_width > 0:
+                    self.console.draw_rect(
+                        x=ui_bar_component.position[0],
+                        y=ui_bar_component.position[1],
+                        width=ui_bar_component.fill_width,
+                        height=ui_bar_component.height,
+                        ch=ui_bar_component.characters,
+                        bg=ui_bar_component.fill_color
+                    )
+
         ui_label_entities = self.world.get_entities_with_components(
             UILabelComponent
         )

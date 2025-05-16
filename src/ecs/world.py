@@ -29,10 +29,12 @@ class World:
                 # Check if one of the components in entity is of the
                 # required component type.
                 for component in entity.components:
-                    has_required_component = (has_required_component or
-                                              isinstance(
-                                                  component,
-                                                  required_component_type))
+                    has_required_component = (
+                        has_required_component or
+                        isinstance(
+                            component, required_component_type
+                        )
+                    )
 
                 has_required_components = (has_required_components and
                                            has_required_component)

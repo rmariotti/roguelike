@@ -13,4 +13,4 @@ class Event(ABC):
     include any relevant data associated with the event.
     """
     def __init__(self):
-        super().__init__()
+        pass

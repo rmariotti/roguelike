@@ -8,13 +8,20 @@ from ecs.world import World
 from ecs.system import System
 from components.position_component import PositionComponent
 from components.rendering_component import RenderingComponent
+from components.description_component import DescriptionComponent
 from components.map_component import MapComponent
 from components.ui_label_component import UILabelComponent
 from components.ui_bar_component import UIBarComponent
 from components.message_log_component import MessageLogComponent
 from components.ui_message_log_component import UIMessageLogComponent
+from components.ui_mouse_location_component import UIMouseLocationComponent
+from components.ui_names_at_mouse_location_tag import UINamesAtMouseLocationTag
 from colors.message_presentation import MessagePresentation
 from tiles.tile_types import SHROUD
+from utils.ecs_helpers import (
+    get_default_component,
+    get_blocking_entities_at_position
+)
 
 
 class RenderingSystem(System):
@@ -22,8 +29,6 @@ class RenderingSystem(System):
     def __init__(
             self, world: World, console: Console, context: Context
     ):
-        super().__init__()
-
         self.world = world
         self.console = console
         self.context = context
@@ -38,6 +43,7 @@ class RenderingSystem(System):
         self.render_maps()
         self.render_characters()
         self.render_ui()
+        self.render_names_at_mouse_location()
         self.context.present(self.console)
         self.console.clear()
 
@@ -183,6 +189,46 @@ class RenderingSystem(System):
                     message_log_component=message_log_component,
                     ui_message_log_component=ui_message_log_component
                 )
+
+    def render_names_at_mouse_location(self) -> None:
+        """
+        Render the names of the entities under mouse cursor.
+        """
+        names_at_mouse_location_tag = get_default_component(
+            world=self.world,
+            component_type=UINamesAtMouseLocationTag
+        )
+        mouse_location_component = get_default_component(
+            world=self.world,
+            component_type=UIMouseLocationComponent
+        )
+
+        if names_at_mouse_location_tag and mouse_location_component:
+            mouse_location_component: UIMouseLocationComponent
+            entities_at_location = get_blocking_entities_at_position(
+                world=self.world,
+                x=mouse_location_component.position[0],
+                y=mouse_location_component.position[1]
+            )
+
+            for entity in entities_at_location:
+                # TODO: Check entity visibility before rendering names.
+                description_component = entity.get_component(
+                    component_type=DescriptionComponent
+                )
+                position_component = entity.get_component(
+                    component_type=PositionComponent
+                )
+
+                if description_component and position_component:
+                    description_component: DescriptionComponent
+                    position_component: PositionComponent
+
+                    self.console.print(
+                        x=position_component.x,
+                        y=position_component.y,
+                        string=description_component.name
+                    )
 
 
 def render_message_log_component_helper(

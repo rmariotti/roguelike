@@ -12,8 +12,6 @@ class StatsComponent(Component):
             self, strength: int, agility: int, toughness: int,
             intelligence: int, willpower: int, charisma: int
     ):
-        super().__init__()
-
         self.strength = strength
         """
         Represents a character's physical power (0–18). Higher strength allows

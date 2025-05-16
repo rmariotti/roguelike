@@ -5,12 +5,15 @@ from typing_extensions import override
 
 import tcod.event
 
-from .escape_action import EscapeAction
-from .bump_action import BumpAction
-from .wait_action import WaitAction
-from .action import Action
+from actions.escape_action import EscapeAction
+from actions.bump_action import BumpAction
+from actions.wait_action import WaitAction
+from actions.action import Action
 from components.is_player_character_tag import IsPlayerCharacterTag
+from components.map_component import MapComponent
+from components.ui_mouse_location_component import UIMouseLocationComponent
 from utils.direction_enum import Direction
+from utils.ecs_helpers import get_default_component
 
 if TYPE_CHECKING:
     from ecs.world import World
@@ -70,6 +73,30 @@ class InputEventHandler(tcod.event.EventDispatch[Action]):
         else:
             raise ValueError("Player entity not found.")
 
+    def _get_map_component(self) -> MapComponent:
+        map_entities = self.world.get_entities_with_components(
+            MapComponent
+        )
+
+        if map_entities:
+            map_component = map_entities[0].get_component(MapComponent)
+
+        if map_component:
+            return map_component
+
+        raise ValueError("Map component not found.")
+
+    def _get_mouse_component(self) -> UIMouseLocationComponent:
+        mouse_component = get_default_component(
+            world=self.world,
+            component_type=UIMouseLocationComponent
+        )
+
+        if not mouse_component:
+            raise ValueError("Mouse component not found.")
+
+        return mouse_component
+
     @override
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
         raise SystemExit()
@@ -77,6 +104,17 @@ class InputEventHandler(tcod.event.EventDispatch[Action]):
     @override
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
         return self.key_action_map.get(event.sym, None)
+
+    @override
+    def ev_mousemotion(self, event: tcod.event.MouseMotion) -> None:
+        # Check that the mouse is hovering on map and update mouse location.
+        map_component = self._get_map_component()
+
+        if (
+            event.tile.x < map_component.width and
+            event.tile.y < map_component.height
+        ):
+            self._get_mouse_component().position = (event.tile.x, event.tile.y)
 
 
 class GameInputEventHandler(InputEventHandler):

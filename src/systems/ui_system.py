@@ -29,8 +29,6 @@ class UISystem(System):
 
     @override
     def update(self):
-        super().update()
-
         self.update_player_health()
 
     def update_player_health(self):

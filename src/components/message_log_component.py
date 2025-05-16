@@ -13,6 +13,4 @@ class MessageLogComponent(Component):
             self,
             message_log: MessageLog
     ):
-        super().__init__()
-
         self.message_log: MessageLog = message_log

@@ -1,7 +1,7 @@
 from typing import Tuple
 
 from ecs.component import Component
-from utils.render_priority_enum import RenderPriority
+from utils.render_priorities import RenderPriority
 
 
 class RenderingComponent(Component):
@@ -10,8 +10,6 @@ class RenderingComponent(Component):
             self, char: str, color: Tuple[int, int, int],
             render_priority: RenderPriority = RenderPriority.CORPSE
     ):
-        super().__init__()
-
         self.char = char
         self.color = color
         self.render_priority = render_priority

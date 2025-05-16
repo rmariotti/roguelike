@@ -3,8 +3,6 @@ from ecs.component import Component
 
 class HealthComponent(Component):
     def __init__(self, hp: int = 1):
-        super().__init__()
-
         self.max_hp = hp
         self._hp = hp
 

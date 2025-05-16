@@ -1,26 +1,23 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
 from typing_extensions import override
+
+from tcod.context import Context
 
 from ecs.system import System
 from ecs.world import World
-from actions.input_event_handler import UIInputEventHandler
+from inputs.input_event_handler import UIInputEventHandler
 from components.is_player_character_tag import IsPlayerCharacterTag
+from components.tcod_event_queue_component import TCODEventQueueComponent
+from utils.ecs_helpers import get_default_component
 
-if TYPE_CHECKING:
-    from systems.tcod_event_dispatch_system import EventDispatchSystem
 
-
-class UiInputSystem(System):
+class UIInputSystem(System):
     def __init__(
             self, world: World, event_handler: UIInputEventHandler,
-            event_dispatcher: EventDispatchSystem
+            context: Context
     ):
-        super().__init__()
         self.world: World = world
         self.event_handler: UIInputEventHandler = event_handler
-        self.event_dispatcher: EventDispatchSystem = event_dispatcher
+        self.context: Context = context
 
     @override
     def start(self):
@@ -32,14 +29,18 @@ class UiInputSystem(System):
 
     @override
     def update(self):
-        super().update()
+        tcod_event_queue: TCODEventQueueComponent = get_default_component(
+            world=self.world,
+            component_type=TCODEventQueueComponent
+        )
 
         player_entity = self.world.get_entities_with_components(
             IsPlayerCharacterTag
         )
 
         if player_entity:
-            for tcod_event in self.event_dispatcher.get_events():
+            for tcod_event in tcod_event_queue.event_queue:
+                self.context.convert_event(tcod_event)
                 action = self.event_handler.dispatch(tcod_event)
 
                 if action:

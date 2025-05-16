@@ -19,4 +19,4 @@ class GameEventHandler():
         }
 
     def dispatch(self, event: Event) -> Action:
-        return 
+        return

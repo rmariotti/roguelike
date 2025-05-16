@@ -17,7 +17,6 @@ if TYPE_CHECKING:
 
 class Action(ABC):
     def __init__(self, entity: Entity, world: World) -> None:
-        super().__init__()
         self.entity = entity
         self.world = world
 
@@ -54,7 +53,7 @@ class ActionWithDirection(Action):
         )
 
         return (destination_x, destination_y)
-    
+
     @property
     def blocking_entities(self) -> Optional[Iterable[Entity]]:
         """Return the blocking entity at this actions destination."""

@@ -12,8 +12,6 @@ def create_is_default_tag(component_type: Type[TComponent]) -> Type[Any]:
 
     class IsDefaultTag(Generic[TComponent]):
         def __init__(self):
-            super().__init__()
-
             self.component_type: Type[TComponent] = component_type
 
     _tag_cache[component_type] = IsDefaultTag

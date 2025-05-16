@@ -6,7 +6,7 @@ from components.description_component import DescriptionComponent
 from components.rendering_component import RenderingComponent
 from components.is_blocking_tag import IsBlockingTag
 from components.message_log_component import MessageLogComponent
-from utils.render_priority_enum import RenderPriority
+from utils.render_priorities import RenderPriority
 from utils.ecs_helpers import get_default_component
 
 
@@ -21,8 +21,6 @@ class DeathSystem(System):
         return super().stop()
 
     def update(self):
-        super().update()
-
         living_entities = self.world.get_entities_with_components(
             HealthComponent)
 

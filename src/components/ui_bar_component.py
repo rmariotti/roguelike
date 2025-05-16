@@ -8,8 +8,6 @@ class UIBarComponent(Component):
             background_color: tuple[int, int, int],
             fill_color: tuple[int, int, int]
     ):
-        super().__init__()
-
         self.position: tuple[int, int] = position
         self.width: int = width
         self.height: int = height

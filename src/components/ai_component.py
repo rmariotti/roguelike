@@ -4,7 +4,7 @@ from typing import Optional, List, Tuple, TYPE_CHECKING
 from typing_extensions import override
 from abc import abstractmethod
 
-import numpy as np # type: ignore
+import numpy as np  # type: ignore
 import tcod
 
 from ecs.component import Component
@@ -45,7 +45,7 @@ class AIComponent(Component):
         destination_x -- the x coordinate of the target position
         destination_y -- the y coordinate of the target position
         """
-        
+
         # Copy the walkable array.
         cost = np.array(map_component.tiles["walkable"], dtype=np.int8)
 
@@ -94,12 +94,10 @@ class AIComponent(Component):
             acting_entity: Entity
     ) -> Action | None:
         raise NotImplementedError()
-    
+
 
 class HostileEnemyAIComponent(AIComponent):
     def __init__(self):
-        super().__init__()
-
         self.cached_path: List[Tuple[int, int]] = []
 
     def move_towards_player_and_attack(
@@ -119,7 +117,7 @@ class HostileEnemyAIComponent(AIComponent):
         dx = player_entity_position_component.x - moving_entity_position_component.x
         dy = player_entity_position_component.y - moving_entity_position_component.y
 
-        distance = max(abs(dx), abs(dy)) # Chebyshev distance.
+        distance = max(abs(dx), abs(dy))  # Chebyshev distance.
 
         if map_component.visible[moving_entity_position_component.x, moving_entity_position_component.y]:
             if distance <= 1:
@@ -130,7 +128,8 @@ class HostileEnemyAIComponent(AIComponent):
                 )
             
             self.cached_path = self.get_path_to(
-                blocking_entities=world.get_entities_with_components(IsBlockingTag),
+                blocking_entities=world.get_entities_with_components(
+                    IsBlockingTag),
                 map_component=map_component,
                 moving_entity=acting_entity,
                 destination_x=player_entity_position_component.x,
@@ -160,10 +159,12 @@ class HostileEnemyAIComponent(AIComponent):
             acting_entity: Entity
     ) -> Optional[Action]:
         map_entities = world.get_entities_with_components(MapComponent)
-        player_enties = world.get_entities_with_components(IsPlayerCharacterTag)
+        player_enties = world.get_entities_with_components(
+            IsPlayerCharacterTag)
 
         if map_entities and player_enties:
-            map_component: MapComponent = map_entities[0].get_component(MapComponent)
+            map_component: MapComponent = map_entities[0].get_component(
+                MapComponent)
             player_entity: Entity = player_enties[0]
 
             return self.move_towards_player_and_attack(

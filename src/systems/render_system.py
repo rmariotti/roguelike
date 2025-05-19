@@ -1,5 +1,4 @@
 import numpy as np
-import textwrap
 
 from tcod.context import Context
 from tcod.console import Console
@@ -16,15 +15,15 @@ from components.message_log_component import MessageLogComponent
 from components.ui_message_log_component import UIMessageLogComponent
 from components.ui_mouse_location_component import UIMouseLocationComponent
 from components.ui_names_at_mouse_location_tag import UINamesAtMouseLocationTag
-from colors.message_presentation import MessagePresentation
 from tiles.tile_types import SHROUD
 from utils.ecs_helpers import (
     get_default_component,
     get_blocking_entities_at_position
 )
+from utils.render_helpers import render_message_log_component
 
 
-class RenderingSystem(System):
+class RenderSystem(System):
     """System handling rendering of entities."""
     def __init__(
             self, world: World, console: Console, context: Context
@@ -44,8 +43,6 @@ class RenderingSystem(System):
         self.render_characters()
         self.render_ui()
         self.render_names_at_mouse_location()
-        self.context.present(self.console)
-        self.console.clear()
 
     def render_characters(self) -> None:
         renderable_entities = sorted(
@@ -184,7 +181,7 @@ class RenderingSystem(System):
             )
 
             if ui_message_log_component:
-                render_message_log_component_helper(
+                render_message_log_component(
                     console=self.console,
                     message_log_component=message_log_component,
                     ui_message_log_component=ui_message_log_component
@@ -229,32 +226,3 @@ class RenderingSystem(System):
                         y=position_component.y,
                         string=description_component.name
                     )
-
-
-def render_message_log_component_helper(
-        console: Console,
-        message_log_component: MessageLogComponent,
-        ui_message_log_component: UIMessageLogComponent
-) -> None:
-    y_offset = ui_message_log_component.height - 1
-    reversed_messages = reversed(
-        message_log_component.message_log.messages
-    )
-
-    for message in reversed_messages:
-        wrapped_text = textwrap.wrap(
-            message.full_text, ui_message_log_component.width
-        )
-        for line in reversed(wrapped_text):
-            console.print(
-                x=ui_message_log_component.position[0],
-                y=ui_message_log_component.position[1] + y_offset,
-                string=line,
-                fg=MessagePresentation.get_message_color_by_category(
-                    message_category=message.message_category
-                )
-            )
-
-            y_offset -= 1
-            if y_offset < 0:
-                return  # No more space to print messages.

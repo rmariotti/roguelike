@@ -9,6 +9,9 @@ from actions.escape_action import EscapeAction
 from actions.bump_action import BumpAction
 from actions.wait_action import WaitAction
 from actions.action import Action
+from actions.message_log_history_actions import (
+    OpenMessageLogHistory, CloseMessageLogHistory
+)
 from components.is_player_character_tag import IsPlayerCharacterTag
 from components.map_component import MapComponent
 from components.ui_mouse_location_component import UIMouseLocationComponent
@@ -54,6 +57,13 @@ WAIT_KEYS = {
     tcod.event.KeySym.PERIOD,
     tcod.event.KeySym.KP_5,
     tcod.event.KeySym.CLEAR
+}
+
+CURSOR_Y_KEYS = {
+    tcod.event.KeySym.UP: -1,
+    tcod.event.KeySym.DOWN: 1,
+    tcod.event.KeySym.PAGEUP: -10,
+    tcod.event.KeySym.PAGEDOWN: 10,
 }
 
 
@@ -139,5 +149,11 @@ class UIInputEventHandler(InputEventHandler):
         super().__init__(world)
 
         self.key_action_map[tcod.event.KeySym.ESCAPE] = EscapeAction(
+            entity=self.player, world=self.world
+        )
+        self.key_action_map[tcod.event.KeySym.v] = OpenMessageLogHistory(
+            entity=self.player, world=self.world
+        )
+        self.key_action_map[tcod.event.KeySym.x] = CloseMessageLogHistory(
             entity=self.player, world=self.world
         )

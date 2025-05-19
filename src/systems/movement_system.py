@@ -75,7 +75,7 @@ class MovementSystem(System):
                         self.world, arrival_x, arrival_y)
 
                     if (
-                        distance != max_distance and blocking_entityies is None
+                        distance != max_distance and not blocking_entityies
                     ):
                         # Update entity position.
                         position_component.x = arrival_x

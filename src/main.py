@@ -14,7 +14,11 @@ from systems.death_system import DeathSystem
 from systems.energy_system import EnergySystem
 from systems.fov_system import FovSystem
 from systems.movement_system import MovementSystem
-from systems.rendering_system import RenderingSystem
+from systems.ui_message_log_history_render_system import (
+    UIMessageLogHistoryRenderSystem
+)
+from systems.render_manager_system import RenderManagerSystem
+from systems.render_system import RenderSystem
 from systems.tcod_event_polling_system import TCODEventPollingSystem
 from systems.ui_input_system import UIInputSystem
 from systems.ui_system import UISystem
@@ -27,6 +31,10 @@ from components.tcod_event_queue_component import TCODEventQueueComponent
 from components.ui_bar_component import UIBarComponent
 from components.ui_label_component import UILabelComponent
 from components.ui_message_log_component import UIMessageLogComponent
+from components.ui_message_log_history_component import (
+    UIMessageLogHistoryComponent
+)
+from components.input_mode_component import InputModeComponent
 from components.ui_mouse_location_component import UIMouseLocationComponent
 from components.ui_names_at_mouse_location_tag import UINamesAtMouseLocationTag
 
@@ -77,13 +85,18 @@ def main() -> None:
         DefaultTag(TCODEventQueueComponent),
         TCODEventQueueComponent()
     )
+    input_modes = Entity(
+        InputModeComponent(),
+        DefaultTag(InputModeComponent)
+    )
 
     # Add core entities to the world
     world.entities.extend([
         player_character_entity,
         game_map,
         action_scheduler,
-        tcod_event_queue
+        tcod_event_queue,
+        input_modes
     ])
 
     systems = systems_initialize(world)
@@ -120,7 +133,9 @@ def main() -> None:
     message_log_entity = Entity(
         DefaultTag(MessageLogComponent),
         MessageLogComponent(message_log=message_log),
-        UIMessageLogComponent(position=(21, 45), width=40, height=5)
+        UIMessageLogComponent(position=(21, 45), width=40, height=5),
+        DefaultTag(UIMessageLogHistoryComponent),
+        UIMessageLogHistoryComponent()
     )
     world.entities.append(message_log_entity)
 
@@ -172,7 +187,13 @@ def tcod_systems_initialize(
         UIInputSystem(
             world, event_handler=ui_input_event_handler, context=context
         ),
-        RenderingSystem(world, console, context)
+        RenderSystem(world, console, context),
+        UIMessageLogHistoryRenderSystem(
+            world=world,
+            root_console=console,
+            context=context
+        ),
+        RenderManagerSystem(console=console, context=context)
     ])
 
     return systems

@@ -4,7 +4,7 @@ from tcod.context import Context
 
 from ecs.system import System
 from ecs.world import World
-from inputs.input_event_handler import UIInputEventHandler
+from inputs.input_event_handler import InputEventHandler
 from components.is_player_character_tag import IsPlayerCharacterTag
 from components.tcod_event_queue_component import TCODEventQueueComponent
 from utils.ecs_helpers import get_default_component
@@ -12,11 +12,11 @@ from utils.ecs_helpers import get_default_component
 
 class UIInputSystem(System):
     def __init__(
-            self, world: World, event_handler: UIInputEventHandler,
+            self, world: World, event_handler: InputEventHandler,
             context: Context
     ):
         self.world: World = world
-        self.event_handler: UIInputEventHandler = event_handler
+        self.event_handler: InputEventHandler = event_handler
         self.context: Context = context
 
     @override

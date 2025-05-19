@@ -22,6 +22,7 @@ from systems.render_system import RenderSystem
 from systems.tcod_event_polling_system import TCODEventPollingSystem
 from systems.ui_input_system import UIInputSystem
 from systems.ui_system import UISystem
+from systems.input_mode_system import InputModeSystem
 
 from components.is_default_tag import DefaultTag
 from components.message_log_component import MessageLogComponent
@@ -40,8 +41,11 @@ from components.ui_names_at_mouse_location_tag import UINamesAtMouseLocationTag
 
 from inputs.input_event_handler import (
     GameInputEventHandler,
-    UIInputEventHandler
+    UIInputEventHandler,
+    InputEventHandler
 )
+from inputs.input_action_mapper import InputActionMapper
+from inputs.setup_input_bindings import setup_input_bindings
 
 from messages.message_log import MessageLog
 from procgen.generate_level import generate_level
@@ -99,7 +103,20 @@ def main() -> None:
         input_modes
     ])
 
-    systems = systems_initialize(world)
+    ui_input_event_handler = UIInputEventHandler(world=world)
+    game_input_event_handler = GameInputEventHandler(world=world)
+    input_action_mapper = InputActionMapper()
+
+    setup_input_bindings(
+        mapper=input_action_mapper,
+        world=world,
+        player=player_character_entity
+    )
+
+    systems = systems_initialize(
+        world=world,
+        game_input_event_handler=game_input_event_handler
+    )
 
     # UI Entities
     mouse = Entity(
@@ -149,18 +166,23 @@ def main() -> None:
         vsync=True,
     ) as context:
         console = tcod.console.Console(screen_width, screen_height, order="F")
-        tcod_systems = tcod_systems_initialize(world, context, console)
+        tcod_systems = tcod_systems_initialize(
+            world=world, context=context, console=console,
+            game_input_event_handler=game_input_event_handler,
+            ui_input_event_handler=ui_input_event_handler,
+            input_action_mapper=input_action_mapper
+        )
         systems.extend(tcod_systems)
 
         while True:
             systems_update(systems)
 
 
-def systems_initialize(world: World) -> list[System]:
+def systems_initialize(
+        world: World, game_input_event_handler: InputEventHandler
+) -> list[System]:
     """Initialize core game systems."""
     systems: list[System] = []
-
-    game_input_event_handler = GameInputEventHandler(world=world)
 
     systems.extend([
         EnergySystem(world),
@@ -175,17 +197,24 @@ def systems_initialize(world: World) -> list[System]:
 
 
 def tcod_systems_initialize(
-        world: World, context: Context, console: Console
+        world: World, context: Context, console: Console,
+        ui_input_event_handler: InputEventHandler,
+        game_input_event_handler: InputEventHandler,
+        input_action_mapper: InputActionMapper,
 ) -> list[System]:
     """Initialize TCOD-specific systems."""
     systems: list[System] = []
-
-    ui_input_event_handler = UIInputEventHandler(world=world)
 
     systems.extend([
         TCODEventPollingSystem(world),
         UIInputSystem(
             world, event_handler=ui_input_event_handler, context=context
+        ),
+        InputModeSystem(
+            world=world,
+            input_action_mapper=input_action_mapper,
+            game_input_event_handler=game_input_event_handler,
+            ui_input_event_handler=ui_input_event_handler
         ),
         RenderSystem(world, console, context),
         UIMessageLogHistoryRenderSystem(

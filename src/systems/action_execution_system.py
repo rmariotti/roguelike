@@ -62,7 +62,7 @@ class ActionExecutionSystem(System):
 
                 if action:
                     scheduler.ready_queue.popleft()
-                    action.perform()
+                    action().perform()
                     break
 
         # Handle entity AI action.

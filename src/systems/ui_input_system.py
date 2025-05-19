@@ -44,5 +44,6 @@ class UIInputSystem(System):
                 action = self.event_handler.dispatch(tcod_event)
 
                 if action:
-                    action.perform()
+                    # Conver partial to action object, then call perform on it.
+                    action().perform()
                     break

@@ -13,11 +13,7 @@ from actions.message_log_history_actions import (
     MessageLogHistoryGoEnd, MessageLogHistoryGoHome,
     MessageLogHistoryMove
 )
-from components.is_player_character_tag import IsPlayerCharacterTag
-from components.map_component import MapComponent
-from components.ui_mouse_location_component import UIMouseLocationComponent
 from utils.direction_enum import Direction
-from utils.ecs_helpers import get_default_component
 from inputs.input_modes import InputModes
 
 if TYPE_CHECKING:
@@ -78,12 +74,20 @@ def setup_input_bindings(
     """
     Registers all the input mode, key, action combinations in the `mapper`.
     """
+    for input_mode in InputModes:
+        mapper.initialize_mode(input_mode)
+
     # Default mode.
     for key, direction in MOVE_KEYS.items():
         mapper.register_game(
             InputModes.DEFAULT,
             key,
-            partial(BumpAction, entity=player, world=world, direction=direction)
+            partial(
+                BumpAction,
+                entity=player,
+                world=world,
+                direction=direction
+            )
         )
 
     for key in WAIT_KEYS:
@@ -131,4 +135,13 @@ def setup_input_bindings(
     )
 
     for key, adjust in CURSOR_Y_KEYS.items():
-
+        mapper.register_ui(
+            InputModes.LOG_VIEW,
+            key,
+            partial(
+                MessageLogHistoryMove,
+                entity=player,
+                world=world,
+                adjust=adjust
+            )
+        )

@@ -11,3 +11,4 @@ class InputModeComponent(Component):
     """
     def __init__(self, input_mode: InputModes = InputModes.DEFAULT):
         self.input_mode = input_mode
+        self.previous_input_mode = None

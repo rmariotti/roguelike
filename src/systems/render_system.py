@@ -155,7 +155,8 @@ class RenderSystem(System):
                 self.console.print(
                     x=ui_label_component.position[0],
                     y=ui_label_component.position[1],
-                    string=ui_label_component.text
+                    string=ui_label_component.text,
+                    fg=ui_label_component.text_color
                 )
 
         # Render ui message logs.

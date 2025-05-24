@@ -26,6 +26,7 @@ def render_message_log_component(
         messages=message_log_component.message_log.messages
     )
 
+
 def render_message_log(
     console: Console,
     x: int,

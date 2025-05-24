@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Type, Iterable
 
 from .entity import Entity
 from .component import Component
@@ -45,3 +45,12 @@ class World:
                 continue
 
         return entities_with_components
+
+    def get_components(
+            self, component_type: Type[Component]
+    ) -> Iterable[Component]:
+        return [
+            e.get_component(component_type)
+
+            for e in self.get_entities_with_components(component_type)
+        ]

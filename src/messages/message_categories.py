@@ -6,3 +6,4 @@ class MessageCategory(Enum):
     WARNING = auto()
     SUCCESS = auto()
     SYSTEM = auto()
+    IMPOSSIBLE = auto()

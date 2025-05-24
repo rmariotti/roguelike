@@ -128,7 +128,11 @@ def main() -> None:
     world.entities.append(mouse)
 
     player_health_label = Entity(
-        UILabelComponent(template="HP: {0}/{1}", position=(1, 47)),
+        UILabelComponent(
+            template="HP: {0}/{1}",
+            position=(1, 47),
+            text_color=UIColors.TEXT
+        ),
         NeedsPlayerHealthTag()
     )
     world.entities.append(player_health_label)

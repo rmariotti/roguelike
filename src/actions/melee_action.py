@@ -6,6 +6,7 @@ from components.health_component import HealthComponent
 from components.description_component import DescriptionComponent
 from components.message_log_component import MessageLogComponent
 from utils.ecs_helpers import get_default_component
+from exceptions.action_exceptions import ImpossibleAction
 
 
 class MeleeAction(ActionWithDirection):
@@ -25,7 +26,7 @@ class MeleeAction(ActionWithDirection):
         )
 
         if not (self.blocking_entities and actor_melee_attack_component):
-            return
+            raise ImpossibleAction("Nothing to attack.")
 
         for target in self.blocking_entities:
             target_health_component: HealthComponent | None = (

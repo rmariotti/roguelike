@@ -4,7 +4,7 @@ from abc import ABC
 from typing import Optional, Tuple, Iterable, TYPE_CHECKING
 from typing_extensions import override
 
-from utils.math_helpers import calculate_destination
+from utils.movement_helpers import calculate_destination
 from utils.ecs_helpers import get_blocking_entities_at_position
 from components.position_component import PositionComponent
 from components.speed_component import SpeedComponent

@@ -7,8 +7,11 @@ from components.is_player_character_tag import IsPlayerCharacterTag
 from components.ai_component import AIComponent
 from components.scheduler_component import SchedulerComponent
 from components.tcod_event_queue_component import TCODEventQueueComponent
+from components.message_log_component import MessageLogComponent
 from inputs.input_event_handler import GameInputEventHandler
 from utils.ecs_helpers import get_default_component
+from exceptions.action_exceptions import ImpossibleAction
+from colors.message_presentation import MessageCategory
 
 if TYPE_CHECKING:
     from ecs.entity import Entity
@@ -61,16 +64,40 @@ class ActionExecutionSystem(System):
                 action = self.event_handler.dispatch(input_event)
 
                 if action:
-                    scheduler.ready_queue.popleft()
-                    action().perform()
-                    break
+                    try:
+                        action().perform()
+                        scheduler.ready_queue.popleft()
+                    except ImpossibleAction as exc:
+                        message_log_components = self.world.get_components(
+                            MessageLogComponent
+                        )
+
+                        for message_log_component in message_log_components:
+                            message_log_component: MessageLogComponent
+                            message_log_component.message_log.add_message(
+                                exc.args[0],
+                                message_category=MessageCategory.IMPOSSIBLE
+                            )
+                    return
 
         # Handle entity AI action.
         else:
             action = self._get_ai_action(acting_entity)
 
             if action:
-                action.perform()
+                try:
+                    action.perform()
+                except ImpossibleAction as exc:
+                    message_log_components = self.world.get_components(
+                        MessageLogComponent
+                    )
+
+                    for message_log_component in message_log_components:
+                        message_log_component: MessageLogComponent
+                        message_log_component.message_log.add_message(
+                            exc.args[0],
+                            message_category=MessageCategory.IMPOSSIBLE
+                        )
 
             # Consume the action, otherwise the program loops.
             scheduler.ready_queue.popleft()

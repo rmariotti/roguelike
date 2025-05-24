@@ -1,15 +1,10 @@
-import numpy as np
-
-import tcod
-
 from ecs.system import System
 from ecs.world import World
 from components.position_component import PositionComponent
 from components.speed_component import SpeedComponent
 from components.direction_component import DirectionComponent
 from components.map_component import MapComponent
-from utils.ecs_helpers import get_blocking_entities_at_position
-from utils.math_helpers import calculate_destination
+from utils.movement_helpers import is_move_valid, calculate_destination
 
 
 class MovementSystem(System):
@@ -47,39 +42,23 @@ class MovementSystem(System):
                     position_component = entity.get_component(
                         PositionComponent)
 
-                    # Setup tcod pathfinding.
-                    graph = tcod.path.CustomGraph(
-                        shape=(map_component.width, map_component.height),
-                        order="F"
-                    )
-                    graph.add_edges(
-                        edge_map=direction_component.direction.edge_map,
-                        cost=map_component.tiles["walkable"].astype(int)
-                    )
-                    pathfinder = tcod.path.Pathfinder(graph)
-                    pathfinder.add_root(
-                        (position_component.x, position_component.y))
-                    pathfinder.resolve()
-
-                    # Check that the point of arrival is reachable.
-                    arrival_x, arrival_y = calculate_destination(
-                        position_component.x,
-                        position_component.y,
-                        speed_component.walking_speed,
-                        direction_component.direction
-                    )
-
-                    max_distance = np.iinfo(pathfinder.distance.dtype).max
-                    distance = pathfinder.distance[arrival_x][arrival_y]
-                    blocking_entityies = get_blocking_entities_at_position(
-                        self.world, arrival_x, arrival_y)
-
                     if (
-                        distance != max_distance and not blocking_entityies
+                        is_move_valid(
+                            world=self.world,
+                            x=position_component.x, y=position_component.y,
+                            direction=direction_component.direction,
+                            speed=speed_component.walking_speed,
+                            map_component=map_component
+                        )
                     ):
                         # Update entity position.
-                        position_component.x = arrival_x
-                        position_component.y = arrival_y
+                        position_component.x, position_component.y = (
+                            calculate_destination(
+                                position_component.x, position_component.y,
+                                speed_component.walking_speed,
+                                direction_component.direction
+                            )
+                        )
 
                     # Stop the entity after movement.
                     speed_component.speed = 0

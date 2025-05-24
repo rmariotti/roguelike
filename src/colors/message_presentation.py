@@ -11,5 +11,6 @@ class MessagePresentation:
             MessageCategory.INFO: UIColors.TEXT,
             MessageCategory.WARNING: UIColors.WARNING,
             MessageCategory.SUCCESS: UIColors.SUCCESS,
-            MessageCategory.SYSTEM: UIColors.WARNING
+            MessageCategory.SYSTEM: UIColors.WARNING,
+            MessageCategory.IMPOSSIBLE: UIColors.IMPOSSIBLE
         }.get(message_category, UIColors.TEXT)

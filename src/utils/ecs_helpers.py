@@ -11,18 +11,9 @@ from components.is_default_tag import create_is_default_tag
 def get_blocking_entities_at_position(
         world: World, x: int, y: int
 ) -> Iterable[Entity]:
-    blocking_entities = world.get_entities_with_components(
-        PositionComponent, IsBlockingTag
+    return get_entities_with_components_at_position(
+        world, (x, y), IsBlockingTag
     )
-
-    blocking_entities_at_position = [
-        entity for entity in blocking_entities if (
-            (position := entity.get_component(PositionComponent)) and
-            (position.x, position.y) == (x, y)
-        )
-    ]
-
-    return blocking_entities_at_position or []
 
 
 def get_default_component(
@@ -37,3 +28,22 @@ def get_default_component(
         return entities_with_component[0].get_component(component_type)
 
     return None
+
+
+def get_entities_with_components_at_position(
+        world: World, position: tuple[int, int],
+        *component_types: Type[Component]
+) -> Iterable[Entity]:
+    """Returns all the entities at position that have evey given component"""
+    entities_with_components = world.get_entities_with_components(
+        PositionComponent, *component_types  # Poistion component is required.
+    )
+
+    entities_with_components_at_position = [
+        entity for entity in entities_with_components if (
+            (position_component := entity.get_component(PositionComponent)) and
+            (position_component.x, position_component.y) == position
+        )
+    ]
+
+    return entities_with_components_at_position or []

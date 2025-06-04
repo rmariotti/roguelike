@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing_extensions import override
+from typing import override
 
 import tcod
 import libtcodpy
@@ -15,12 +15,11 @@ from utils.render_helpers import render_message_log
 
 
 class UIMessageLogHistoryRenderSystem(System):
-    """
-    System handling rendering of message log history components in tcod ui.
-    """
+    """Renders the message log history in tcod ui."""
     def __init__(
             self, world: World, root_console: tcod.console.Console,
-            context: tcod.context.Context):
+            context: tcod.context.Context
+    ):
         self.world: World = world
         self.root_console: tcod.console.Console = root_console
         self.log_console: tcod.console.Console | None = None
@@ -63,7 +62,7 @@ class UIMessageLogHistoryRenderSystem(System):
 
             # Sync ui history component and log component.
             # TODO: The following lines of code should be in a
-            # separate system. <RM, 17/5/2025>
+            # separate system. <RM, 17-5-2025>
             if not ui_history_component.length:
                 ui_history_component.length = (
                     len(log_component.message_log.messages)
@@ -72,7 +71,7 @@ class UIMessageLogHistoryRenderSystem(System):
                     ui_history_component.length - 1
                 )
 
-            # TODO: Remove hardcoded console size. <RM, 17/5/2025>
+            # TODO: Remove hardcoded console size. <RM, 17-5-2025>
             self.log_console = tcod.console.Console(
                 self.root_console.width - 6,
                 self.root_console.height - 6

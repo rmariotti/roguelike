@@ -22,13 +22,23 @@ from systems.render_system import RenderSystem
 from systems.tcod_event_polling_system import TCODEventPollingSystem
 from systems.ui_input_system import UIInputSystem
 from systems.ui_system import UISystem
+from systems.ui_inventory_render_system import UIInventoryRenderSystem
 from systems.input_mode_system import InputModeSystem
+from systems.use_item_intent_resolution_system import (
+    UseItemIntentResolutionSystem
+)
+from systems.heal_effect_system import HealEffectSystem
+from systems.pickup_item_intent_resolution_system import (
+    PickupItemIntentResolutionSystem
+)
 
 from components.is_default_tag import DefaultTag
 from components.message_log_component import MessageLogComponent
 from components.needs_player_health_tag import NeedsPlayerHealthTag
 from components.scheduler_component import SchedulerComponent
 from components.tcod_event_queue_component import TCODEventQueueComponent
+from components.queue_component import QueueComponent
+from events.apply_effect_event import ApplyEffectEvent
 from components.ui_bar_component import UIBarComponent
 from components.ui_label_component import UILabelComponent
 from components.ui_message_log_component import UIMessageLogComponent
@@ -50,6 +60,7 @@ from inputs.setup_input_bindings import setup_input_bindings
 from messages.message_log import MessageLog
 from procgen.generate_level import generate_level
 from procgen.generate_player_character import generate_player_character
+from procgen.generate_items import generate_medikit
 from colors.ui_colors import UIColors
 
 if TYPE_CHECKING:
@@ -73,6 +84,9 @@ def main() -> None:
     player_character_entity = generate_player_character(
         (screen_width // 2, screen_height // 2)
     )
+    medikit = generate_medikit(
+        (screen_width // 2, screen_height // 2)
+    )
     game_map = Entity(generate_level(
         world=world,
         max_rooms=max_rooms,
@@ -89,6 +103,10 @@ def main() -> None:
         DefaultTag(TCODEventQueueComponent),
         TCODEventQueueComponent()
     )
+    apply_effect_event_queue = Entity(
+        DefaultTag(QueueComponent[ApplyEffectEvent]),
+        QueueComponent[ApplyEffectEvent]
+    )
     input_modes = Entity(
         InputModeComponent(),
         DefaultTag(InputModeComponent)
@@ -97,9 +115,11 @@ def main() -> None:
     # Add core entities to the world
     world.entities.extend([
         player_character_entity,
+        medikit,
         game_map,
         action_scheduler,
         tcod_event_queue,
+        apply_effect_event_queue,
         input_modes
     ])
 
@@ -195,6 +215,9 @@ def systems_initialize(
         DeathSystem(world),
         FovSystem(world),
         UISystem(world),
+        HealEffectSystem(world),
+        UseItemIntentResolutionSystem(world),
+        PickupItemIntentResolutionSystem(world)
     ])
 
     return systems
@@ -222,6 +245,11 @@ def tcod_systems_initialize(
         ),
         RenderSystem(world, console, context),
         UIMessageLogHistoryRenderSystem(
+            world=world,
+            root_console=console,
+            context=context
+        ),
+        UIInventoryRenderSystem(
             world=world,
             root_console=console,
             context=context

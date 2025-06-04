@@ -1,14 +1,7 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
-from collections import deque
-
-from ecs.component import Component
-
-if TYPE_CHECKING:
-    from typing import Deque
-    from ecs.entity import Entity
+from ecs.entity import Entity
+from components.queue_component import QueueComponent
 
 
-class SchedulerComponent(Component):
-    ready_queue: Deque[Entity] = deque()
+class SchedulerComponent(QueueComponent[Entity]):
+    def __init__(self):
+        super().__init__(Entity)

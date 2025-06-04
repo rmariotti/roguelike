@@ -26,7 +26,7 @@ class EnergySystem(System):
         # TODO: Use a proper lock to avoid actor's upkeep beign executed
         # while awaiting for someone to act. <RM, 2025-05-03>
         if (
-            scheduler.ready_queue
+            scheduler.queue
         ):
             return
 
@@ -42,4 +42,4 @@ class EnergySystem(System):
             if actor_component.energy >= actor_component.treshold:
                 # Reset energy after gaining a turn.
                 actor_component.energy = 0
-                scheduler.ready_queue.append(actor)
+                scheduler.queue.append(actor)

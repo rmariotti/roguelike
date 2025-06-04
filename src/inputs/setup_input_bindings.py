@@ -13,6 +13,8 @@ from actions.message_log_history_actions import (
     MessageLogHistoryGoEnd, MessageLogHistoryGoHome,
     MessageLogHistoryMove
 )
+from actions.pickup_action import PickupAction
+from actions.inventory_actions import OpenInventory, CloseInventory
 from utils.direction_enum import Direction
 from inputs.input_modes import InputModes
 
@@ -72,24 +74,22 @@ def setup_input_bindings(
         player: Entity
 ):
     """
-    Registers all the input mode, key, action combinations in the `mapper`.
+    Registers all input bindings for different input modes.
     """
+    # Initialize input modes.
     for input_mode in InputModes:
         mapper.initialize_mode(input_mode)
 
-    # Default mode.
+    # === DEFAULT MODE ===
+    # Movement keys → BumpAction.
     for key, direction in MOVE_KEYS.items():
         mapper.register_game(
             InputModes.DEFAULT,
             key,
-            partial(
-                BumpAction,
-                entity=player,
-                world=world,
-                direction=direction
-            )
+            partial(BumpAction, entity=player, world=world, direction=direction)
         )
 
+    # Wait keys → WaitAction.
     for key in WAIT_KEYS:
         mapper.register_game(
             InputModes.DEFAULT,
@@ -97,31 +97,37 @@ def setup_input_bindings(
             partial(WaitAction, entity=player, world=world)
         )
 
+    # Open message log view.
     mapper.register_ui(
         InputModes.DEFAULT,
         tcod.event.KeySym.v,
         partial(OpenMessageLogHistory, entity=player, world=world)
     )
 
+    # ESC → Exit the game or cancel.
     mapper.register_ui(
         InputModes.DEFAULT,
         tcod.event.KeySym.ESCAPE,
         partial(EscapeAction, entity=player, world=world)
     )
 
-    # Message log view mode.
-    mapper.register_ui(
-        InputModes.LOG_VIEW,
-        tcod.event.KeySym.x,
-        partial(CloseMessageLogHistory, entity=player, world=world)
+    # 'g' key → Pickup item action.
+    mapper.register_game(
+        InputModes.DEFAULT,
+        tcod.event.KeySym.g,
+        partial(PickupAction, entity=player, world=world)
     )
 
-    mapper.register_ui(
-        InputModes.LOG_VIEW,
-        tcod.event.KeySym.ESCAPE,
-        partial(CloseMessageLogHistory, entity=player, world=world)
-    )
+    # === LOG_VIEW MODE ===
+    # Close log view.
+    for key in (tcod.event.KeySym.x, tcod.event.KeySym.ESCAPE):
+        mapper.register_ui(
+            InputModes.LOG_VIEW,
+            key,
+            partial(CloseMessageLogHistory, entity=player, world=world)
+        )
 
+    # Scroll to start/end of log.
     mapper.register_ui(
         InputModes.LOG_VIEW,
         tcod.event.KeySym.HOME,
@@ -134,14 +140,17 @@ def setup_input_bindings(
         partial(MessageLogHistoryGoEnd, entity=player, world=world)
     )
 
+    # Scroll message log cursor up/down.
     for key, adjust in CURSOR_Y_KEYS.items():
         mapper.register_ui(
             InputModes.LOG_VIEW,
             key,
-            partial(
-                MessageLogHistoryMove,
-                entity=player,
-                world=world,
-                adjust=adjust
-            )
+            partial(MessageLogHistoryMove, entity=player, world=world, adjust=adjust)
         )
+
+    # === INVENTORY MODE ===
+    mapper.register_ui(
+        InputModes.DEFAULT,
+        tcod.event.KeySym.i,
+        partial(OpenInventory, entity=player, world=world)
+    )

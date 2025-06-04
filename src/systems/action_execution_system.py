@@ -45,11 +45,11 @@ class ActionExecutionSystem(System):
         # TODO: This service is at risk at beign an infinite loop, this method
         # needs to consume an action (or wait for input and then consume the
         # action). <RM, 2025-05-4>
-        if not scheduler.ready_queue:
+        if not scheduler.queue:
             return
 
-        # The index-0 element always exist since `ready_queue` in not empty.
-        acting_entity = scheduler.ready_queue[0]
+        # The index-0 element always exist since `queue` in not empty.
+        acting_entity = scheduler.queue[0]
 
         # Handle player character action.
         if acting_entity.get_component(IsPlayerCharacterTag):
@@ -66,7 +66,7 @@ class ActionExecutionSystem(System):
                 if action:
                     try:
                         action().perform()
-                        scheduler.ready_queue.popleft()
+                        scheduler.queue.popleft()
                     except ImpossibleAction as exc:
                         message_log_components = self.world.get_components(
                             MessageLogComponent
@@ -100,7 +100,7 @@ class ActionExecutionSystem(System):
                         )
 
             # Consume the action, otherwise the program loops.
-            scheduler.ready_queue.popleft()
+            scheduler.queue.popleft()
 
     def _get_ai_action(self, entity: Entity) -> Action | None:
         ai_component: Optional[AIComponent] = entity.get_component(AIComponent)

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-from typing_extensions import override
+from typing import TYPE_CHECKING, override
 
 from .action import Action
 from components.input_mode_component import InputModeComponent
